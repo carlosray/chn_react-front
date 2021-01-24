@@ -38,6 +38,8 @@ import {
     UncontrolledTooltip
 } from "reactstrap";
 import Form from "reactstrap/es/Form";
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from "@material-ui/core/IconButton";
 
 // core components
 
@@ -47,13 +49,15 @@ class Dashboard extends React.Component {
         this.state = {
             name: '',
             ip: '',
-            desc: '',
-            data: []
+            description: '',
+            data: [],
+            isShowDeleteNotification: false
         };
 
         this.handleChangeName = this.handleChangeName.bind(this);
         this.handleChangeIp = this.handleChangeIp.bind(this);
         this.handleChangeDesc = this.handleChangeDesc.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -66,42 +70,60 @@ class Dashboard extends React.Component {
     }
 
     handleChangeDesc(event) {
-        this.setState({desc: event.target.value});
+        this.setState({description: event.target.value});
     }
 
     componentDidMount() {
         const apiUrl = 'http://localhost:8080/test';
         fetch(apiUrl)
             .then(res => res.json())
-            .then((data) => {
-                this.setState(function (prevState, props) {
-                    const newItem = {name: data.name, ip: data.ip, desc: data.description};
-                    const prevData = prevState.data;
-                    prevData.push(newItem)
-                    return {data: prevData}
-                });
+            .then((inputData) => {
+                console.log(inputData);
+                this.setState({data: inputData});
             })
             .catch(console.log)
     }
 
     handleSubmit(event) {
         fetch('http://localhost:8080/test', {
-            method: 'post',
+            method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({name: this.state.name, ip: this.state.ip, description: this.state.desc})
-        }).then(res=>res.json())
-            .then(res => console.log(res));
+            body: JSON.stringify({name: this.state.name, ip: this.state.ip, description: this.state.description})
+        })
+            .then(res=>res.json())
+            .then(res => {
+                console.log(res);
+                this.setState(function (prevState, props) {
+                    const prevData = prevState.data;
+                    prevData.push(res)
+                    return {data: prevData}
+                });
+            });
 
-        this.setState(function (prevState, props) {
-            const newItem = {name: this.state.name, ip: this.state.ip, desc: this.state.desc};
-            const prevData = prevState.data;
-            prevData.push(newItem)
-            return {data: prevData}
-        });
+
         event.preventDefault();
+    }
+
+    handleDelete(id, index) {
+        fetch('http://localhost:8080/test/' + id, {
+            method: 'DELETE'
+        })
+            .then(res => {
+                if (res.status === 204) {
+                    console.log(res)
+                    this.setState(function (prevState, props) {
+                        const prevData = prevState.data;
+                        delete prevData[index];
+                        return {data: prevData}
+                    });
+                }
+                else {
+
+                }
+            });
     }
 
     render() {
@@ -156,15 +178,16 @@ class Dashboard extends React.Component {
                         <Col md="12">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle tag="h4">Simple Table</CardTitle>
+                                    <CardTitle tag="h4">Существующие мониторинги</CardTitle>
                                 </CardHeader>
                                 <CardBody>
                                     <Table className="tablesorter" responsive>
                                         <thead className="text-primary">
                                         <tr>
-                                            <th>Name</th>
+                                            <th>Имя</th>
                                             <th>Ip</th>
                                             <th>Описание</th>
+                                            <th>Удалить</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -173,7 +196,8 @@ class Dashboard extends React.Component {
                                                 <tr key={index}>
                                                     <td>{listValue.name}</td>
                                                     <td>{listValue.ip}</td>
-                                                    <td>{listValue.desc}</td>
+                                                    <td>{listValue.description}</td>
+                                                    <IconButton onClick={() => { this.handleDelete(listValue.id, index) }} color="secondary"><DeleteIcon /></IconButton>
                                                 </tr>
                                             );
                                         })}
