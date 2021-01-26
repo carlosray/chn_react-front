@@ -40,6 +40,8 @@ import {
 import Form from "reactstrap/es/Form";
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from "@material-ui/core/IconButton";
+import Alert from '@material-ui/lab/Alert';
+import Collapse from "@material-ui/core/Collapse";
 
 // core components
 
@@ -47,6 +49,8 @@ class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            alertSeverity: 'info',
+            alertMessage: 'Что-то произошло.. :)',
             name: '',
             ip: '',
             description: '',
@@ -76,11 +80,18 @@ class Dashboard extends React.Component {
     componentDidMount() {
         const apiUrl = 'http://localhost:8080/test';
         fetch(apiUrl)
-            .then(res => res.json())
-            .then((inputData) => {
-                console.log(inputData);
-                this.setState({data: inputData});
+            .then(res => {
+                if (res.status !== 200) {
+                    this.handleShowAlert("Ошибка при получении записей", "error");
+                    console.log(res);
+                    throw new Error('Response not 200 (ok).');
+                }
+                return res.json();
             })
+            .then(resJson => {
+                this.setState({data: resJson});
+                }
+            )
             .catch(console.log)
     }
 
@@ -93,15 +104,24 @@ class Dashboard extends React.Component {
             },
             body: JSON.stringify({name: this.state.name, ip: this.state.ip, description: this.state.description})
         })
-            .then(res=>res.json())
             .then(res => {
-                console.log(res);
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    this.handleShowAlert("Ошибка! Запись не сохранена", "error");
+                    console.log(res);
+                    throw new Error('Response not 200 (ok).');
+                }
+            })
+            .then(resJson => {
                 this.setState(function (prevState, props) {
                     const prevData = prevState.data;
-                    prevData.push(res)
+                    prevData.push(resJson)
                     return {data: prevData}
                 });
-            });
+                this.handleShowAlert("Успешно сохранена запись", "success");
+            })
+            .catch(console.log);
 
 
         event.preventDefault();
@@ -113,23 +133,42 @@ class Dashboard extends React.Component {
         })
             .then(res => {
                 if (res.status === 204) {
-                    console.log(res)
                     this.setState(function (prevState, props) {
                         const prevData = prevState.data;
                         delete prevData[index];
                         return {data: prevData}
                     });
+                    this.handleShowAlert("Успешно удалена запись", "success");
+                } else {
+                    this.handleShowAlert("Ошибка! Запись не удалена", "error");
+                    console.log(res);
+                    throw new Error('Response not 204 (no content).');
                 }
-                else {
+            })
+            .catch(console.log);
+    }
 
-                }
-            });
+    handleShowAlert(message, severity) {
+        this.setState({isShowDeleteNotification: true});
+        this.setState({alertMessage: message});
+        this.setState({alertSeverity: severity});
+        setTimeout(() => {
+            this.setState({
+                isShowDeleteNotification: false
+            })
+        }, 3000)
     }
 
     render() {
         return (
             <>
+
                 <div className="content">
+                    <Collapse in={this.state.isShowDeleteNotification}>
+                        <Alert severity={this.state.alertSeverity}>
+                            {this.state.alertMessage}
+                        </Alert>
+                    </Collapse>
                     <Row>
                         <Col md="8">
                             <Card>
@@ -147,20 +186,20 @@ class Dashboard extends React.Component {
                                             </Col>
                                             <Col md="7">
                                                 <label>IP</label>
-                                                    <Input type="text"
-                                                           placeholder=" IP адрес"
-                                                           onChange={this.handleChangeIp}/>
+                                                <Input type="text"
+                                                       placeholder=" IP адрес"
+                                                       onChange={this.handleChangeIp}/>
                                             </Col>
                                         </Row>
                                         <Row>
                                             <Col md="8">
                                                 <FormGroup>
-                                                <label>Описание:</label>
-                                                <Input cols="80"
-                                                       placeholder=" Описание мониторинга"
-                                                       rows="4"
-                                                       type="textarea"
-                                                       onChange={this.handleChangeDesc}/>
+                                                    <label>Описание:</label>
+                                                    <Input cols="80"
+                                                           placeholder=" Описание мониторинга"
+                                                           rows="4"
+                                                           type="textarea"
+                                                           onChange={this.handleChangeDesc}/>
                                                 </FormGroup>
                                             </Col>
                                         </Row>
@@ -197,7 +236,9 @@ class Dashboard extends React.Component {
                                                     <td>{listValue.name}</td>
                                                     <td>{listValue.ip}</td>
                                                     <td>{listValue.description}</td>
-                                                    <IconButton onClick={() => { this.handleDelete(listValue.id, index) }} color="secondary"><DeleteIcon /></IconButton>
+                                                    <IconButton onClick={() => {
+                                                        this.handleDelete(listValue.id, index)
+                                                    }} color="secondary"><DeleteIcon/></IconButton>
                                                 </tr>
                                             );
                                         })}
