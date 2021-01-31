@@ -1,0 +1,6 @@
+job:
+  script:
+    - docker build -t react-front-image .
+    - docker-compose up -d
+  only:
+    - master
