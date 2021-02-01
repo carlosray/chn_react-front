@@ -78,7 +78,7 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        const apiUrl = 'http://'+process.env.BACKEND_HOST+':8080/test';
+        const apiUrl = 'http://'+process.env.REACT_APP_BACKEND_HOST+':8080/test';
         fetch(apiUrl)
             .then(res => {
                 if (res.status !== 200) {
@@ -96,7 +96,7 @@ class Dashboard extends React.Component {
     }
 
     handleSubmit(event) {
-        fetch('http://'+process.env.BACKEND_HOST+':8080/test', {
+        fetch('http://'+process.env.REACT_APP_BACKEND_HOST+':8080/test', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -128,7 +128,7 @@ class Dashboard extends React.Component {
     }
 
     handleDelete(id, index) {
-        fetch('http://'+process.env.BACKEND_HOST+':8080/test/' + id, {
+        fetch('http://'+process.env.REACT_APP_BACKEND_HOST+':8080/test/' + id, {
             method: 'DELETE'
         })
             .then(res => {
