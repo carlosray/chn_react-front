@@ -29,7 +29,7 @@ import {
     Row,
     Col,
 } from "reactstrap";
-import { AvForm, AvField } from 'availity-reactstrap-validation';
+import {AvForm, AvField} from 'availity-reactstrap-validation';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from "@material-ui/core/IconButton";
 import Alert from '@material-ui/lab/Alert';
@@ -49,11 +49,7 @@ class Dashboard extends React.Component {
             ip: '',
             description: '',
             data: [],
-            isShowDeleteNotification: false,
-            error: {
-                ip: false,
-                ip_message: 'Не валидный формат ip адреса'
-            }
+            isShowDeleteNotification: false
         };
 
         this.handleChangeName = this.handleChangeName.bind(this);
@@ -76,7 +72,7 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        const apiUrl = 'http://'+process.env.REACT_APP_BACKEND_HOST+':8080/test';
+        const apiUrl = 'http://' + process.env.REACT_APP_BACKEND_HOST + ':8080/test';
         fetch(apiUrl)
             .then(res => {
                 if (res.status !== 200) {
@@ -87,14 +83,14 @@ class Dashboard extends React.Component {
                 return res.json();
             })
             .then(resJson => {
-                this.setState({data: resJson});
+                    this.setState({data: resJson});
                 }
             )
             .catch(console.log)
     }
 
     handleSubmit(event) {
-        fetch('http://'+process.env.REACT_APP_BACKEND_HOST+':8080/test', {
+        fetch('http://' + process.env.REACT_APP_BACKEND_HOST + ':8080/test', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -126,7 +122,7 @@ class Dashboard extends React.Component {
     }
 
     handleDelete(id, index) {
-        fetch('http://'+process.env.REACT_APP_BACKEND_HOST+':8080/test/' + id, {
+        fetch('http://' + process.env.REACT_APP_BACKEND_HOST + ':8080/test/' + id, {
             method: 'DELETE'
         })
             .then(res => {
@@ -184,7 +180,7 @@ class Dashboard extends React.Component {
                                                     type="text"
                                                     errorMessage="Invalid name" validate={{
                                                     required: {value: true, errorMessage: 'Поле не должно быть пустым'}
-                                                }} />
+                                                }}/>
                                             </Col>
                                             <Col md="7">
                                                 <AvField
@@ -196,7 +192,7 @@ class Dashboard extends React.Component {
                                                     errorMessage="Invalid name" validate={{
                                                     required: {value: true, errorMessage: 'Поле не должно быть пустым'},
                                                     pattern: {value: ValidatorService.validateIP_Pattern(), errorMessage: 'Формат IP адреса не валидный'}
-                                                }} />
+                                                }}/>
                                             </Col>
                                         </Row>
                                         <Row>
@@ -216,7 +212,7 @@ class Dashboard extends React.Component {
                                                 <Input type="submit" value="Отправить"/>
                                             </Col>
                                         </Row>
-                                        </AvForm>
+                                    </AvForm>
                                 </CardBody>
                             </Card>
                         </Col>
