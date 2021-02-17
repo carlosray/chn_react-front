@@ -19,6 +19,7 @@ import React from "react";
 
 // reactstrap components
 import {
+    Alert,
     TabPane,
     Nav,
     Card,
@@ -26,8 +27,6 @@ import {
     CardBody,
     CardFooter,
     FormGroup,
-    Form,
-    Input,
     Row,
     Col,
     NavItem,
@@ -45,6 +44,10 @@ class UserProfile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            isShowPassNotification: false,
+            isShowProfileNotification: false,
+            alertSeverity: 'info',
+            alertMessage: 'Что-то произошло.. :)',
             activeTab: '1',
             password_old: '',
             password_new: '',
@@ -83,7 +86,31 @@ class UserProfile extends React.Component {
             password_new: '',
             password_new_confirm: ''
         })
+        this.handleShowPassAlert("Успешно изменен пароль", "success")
     };
+
+    handleShowPassAlert(message, severity) {
+        this.setState({isShowPassNotification: true});
+        this.setState({alertMessage: message});
+        this.setState({alertSeverity: severity});
+        setTimeout(() => {
+            this.setState({
+                isShowPassNotification: false
+            })
+        }, 3000)
+
+    }
+
+    handleShowProfileAlert(message, severity) {
+        this.setState({isShowProfileNotification: true});
+        this.setState({alertMessage: message});
+        this.setState({alertSeverity: severity});
+        setTimeout(() => {
+            this.setState({
+                isShowProfileNotification: false
+            })
+        }, 3000)
+    }
 
     render() {
         return (
@@ -117,15 +144,18 @@ class UserProfile extends React.Component {
                                 <Col md="8">
                                     <Card>
                                         <CardHeader>
-                                            <h5 className="title">Редактировать профиль</h5>
+                                            {this.state.isShowProfileNotification && <Alert color={this.state.alertSeverity}>
+                                                {this.state.alertMessage}
+                                            </Alert>}
                                         </CardHeader>
                                         <CardBody>
-                                            <Form>
+                                            <AvForm>
                                                 <Row>
                                                     <Col md="4">
                                                         <FormGroup>
                                                             <label>Логин</label>
-                                                            <Input
+                                                            <AvField
+                                                                name="login"
                                                                 disabled
                                                                 defaultValue={AuthenticationService.getLoggedInUserName()}
                                                                 placeholder="Username"
@@ -135,12 +165,13 @@ class UserProfile extends React.Component {
                                                     </Col>
                                                     <Col className="pl-md-1" md="4">
                                                         <FormGroup>
-                                                            <label htmlFor="exampleInputEmail1">
-                                                                Email
-                                                            </label>
-                                                            <Input
+                                                            <AvField
+                                                                name="email"
+                                                                label="Email"
                                                                 required
-                                                                placeholder="mike@email.com" type="email"/>
+                                                                placeholder="mike@email.com"
+                                                                type="email"
+                                                                errorMessage="Некорректный Email"/>
                                                         </FormGroup>
                                                     </Col>
                                                 </Row>
@@ -149,9 +180,10 @@ class UserProfile extends React.Component {
                                                     <Col className="pr-md-1" md="6">
                                                         <FormGroup>
                                                             <label>Имя</label>
-                                                            <Input
+                                                            <AvField
+                                                                name="first-name"
                                                                 defaultValue={""}
-                                                                placeholder={""}
+                                                                placeholder={"Иван"}
                                                                 type="text"
                                                             />
                                                         </FormGroup>
@@ -159,9 +191,10 @@ class UserProfile extends React.Component {
                                                     <Col className="pl-md-1" md="6">
                                                         <FormGroup>
                                                             <label>Фамилия</label>
-                                                            <Input
+                                                            <AvField
+                                                                name="last-name"
                                                                 defaultValue={""}
-                                                                placeholder={""}
+                                                                placeholder={"Иванов"}
                                                                 type="text"
                                                             />
                                                         </FormGroup>
@@ -171,7 +204,8 @@ class UserProfile extends React.Component {
                                                     <Col className="pr-md-1" md="4">
                                                         <FormGroup>
                                                             <label>Город</label>
-                                                            <Input
+                                                            <AvField
+                                                                name="city"
                                                                 placeholder="Moscow"
                                                                 type="text"
                                                             />
@@ -180,7 +214,8 @@ class UserProfile extends React.Component {
                                                     <Col className="px-md-1" md="4">
                                                         <FormGroup>
                                                             <label>Страна</label>
-                                                            <Input
+                                                            <AvField
+                                                                name="country"
                                                                 placeholder="Russia"
                                                                 type="text"
                                                             />
@@ -189,7 +224,8 @@ class UserProfile extends React.Component {
                                                     <Col  md="4">
                                                         <FormGroup>
                                                             <label>Компания</label>
-                                                            <Input
+                                                            <AvField
+                                                                name="company"
                                                                 placeholder="Company"
                                                                 type="text"
                                                             />
@@ -200,7 +236,8 @@ class UserProfile extends React.Component {
                                                     <Col md="8">
                                                         <FormGroup>
                                                             <label>Дополнительная информация</label>
-                                                            <Input
+                                                            <AvField
+                                                                name="info"
                                                                 cols="80"
                                                                 defaultValue="Ака, ака, ак-47!
                                                                 У щет мэн, гат дем"
@@ -211,7 +248,7 @@ class UserProfile extends React.Component {
                                                         </FormGroup>
                                                     </Col>
                                                 </Row>
-                                            </Form>
+                                            </AvForm>
                                         </CardBody>
                                         <CardFooter>
                                             <Row>
@@ -237,7 +274,9 @@ class UserProfile extends React.Component {
                                 <Col md="8">
                                     <Card>
                                         <CardHeader>
-                                            <h5 className="title">Изменить пароль</h5>
+                                            {this.state.isShowPassNotification && <Alert color={this.state.alertSeverity}>
+                                                {this.state.alertMessage}
+                                            </Alert>}
                                         </CardHeader>
                                         <CardBody>
                                             <AvForm onValidSubmit={this.handleChangePass}>

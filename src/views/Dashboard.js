@@ -49,7 +49,7 @@ class Dashboard extends React.Component {
             ip: '',
             description: '',
             data: [],
-            isShowDeleteNotification: false
+            isShowNotification: false
         };
 
         this.handleChangeName = this.handleChangeName.bind(this);
@@ -143,7 +143,7 @@ class Dashboard extends React.Component {
     }
 
     handleShowAlert(message, severity) {
-        this.setState({isShowDeleteNotification: true});
+        this.setState({isShowNotification: true});
         this.setState({alertMessage: message});
         this.setState({alertSeverity: severity});
         setTimeout(() => {
@@ -157,7 +157,7 @@ class Dashboard extends React.Component {
         return (
             <>
                 <div className="content">
-                    <Collapse in={this.state.isShowDeleteNotification}>
+                    <Collapse in={this.state.isShowNotification}>
                         <Alert severity={this.state.alertSeverity}>
                             {this.state.alertMessage}
                         </Alert>

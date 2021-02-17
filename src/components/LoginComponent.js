@@ -1,8 +1,6 @@
 import React, {Component} from 'react'
 import AuthenticationService from '../service/AuthenticationService';
-import CardHeader from "@material-ui/core/CardHeader";
-import {Card, CardBody, CardTitle, Col, Input, Row, Table} from "reactstrap";
-import Form from "reactstrap/es/Form";
+import {CardHeader, Card, CardBody, Col, Row} from "reactstrap";
 import {Button} from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -112,11 +110,10 @@ class LoginComponent extends Component {
                     <Row className="justify-content-center">
                         <Col xl="4" lg="5" md="5">
                             <Card>
-                                {this.state.hasLoginFailed &&
-                                <div className="alert alert-warning">Invalid Credentials</div>}
-                                {this.state.showSuccessMessage && <div>Login Successful</div>}
                                 <CardHeader>
-                                    <h5 className="title">Авторизация</h5>
+                                    {this.state.hasLoginFailed &&
+                                    <div className="alert alert-warning">Invalid Credentials</div>}
+                                    {this.state.showSuccessMessage && <div>Login Successful</div>}
                                 </CardHeader>
                                 <CardBody>
                                     <form noValidate>
@@ -180,68 +177,6 @@ class LoginComponent extends Component {
                     </Row>
                 </div>
             </>
-            // <Container className="content" component="main" maxWidth="xs">
-            //     <CssBaseline/>
-            //     <div>
-            //         {this.state.hasLoginFailed &&
-            //         <div className="alert alert-warning">Invalid Credentials</div>}
-            //         {this.state.showSuccessMessage && <div>Login Successful</div>}
-            //         <Typography component="h1" variant="h5">
-            //             Войти
-            //         </Typography>
-            //         <form noValidate>
-            //             <TextField
-            //                 onChange={this.handleChange}
-            //                 variant="outlined"
-            //                 margin="normal"
-            //                 required
-            //                 fullWidth
-            //                 id="email"
-            //                 label="Логин"
-            //                 name="username"
-            //                 autoComplete="username"
-            //                 autoFocus
-            //             />
-            //             <TextField
-            //                 onChange={this.handleChange}
-            //                 variant="outlined"
-            //                 margin="normal"
-            //                 required
-            //                 fullWidth
-            //                 name="password"
-            //                 label="Password"
-            //                 type="password"
-            //                 id="password"
-            //                 autoComplete="current-password"
-            //             />
-            //             <FormControlLabel
-            //                 control={<Checkbox value="remember" color="primary"/>}
-            //                 label="Remember me"
-            //             />
-            //             <Button
-            //                 type="submit"
-            //                 fullWidth
-            //                 variant="contained"
-            //                 color="primary"
-            //                 onClick={this.loginClicked}
-            //             >
-            //                 Sign In
-            //             </Button>
-            //             <Grid container>
-            //                 <Grid item xs>
-            //                     <Link href="#" variant="body2">
-            //                         Forgot password?
-            //                     </Link>
-            //                 </Grid>
-            //                 <Grid item>
-            //                     <Link href="#" variant="body2">
-            //                         {"Don't have an account? Sign Up"}
-            //                     </Link>
-            //                 </Grid>
-            //             </Grid>
-            //         </form>
-            //     </div>
-            // </Container>
         );
     }
 }
