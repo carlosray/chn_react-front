@@ -36,6 +36,7 @@ import {
   Container,
   Modal
 } from "reactstrap";
+import AuthenticationService from "../../service/AuthenticationService";
 
 class AdminNavbar extends React.Component {
   constructor(props) {
@@ -52,6 +53,11 @@ class AdminNavbar extends React.Component {
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateColor);
   }
+
+  logout() {
+    AuthenticationService.logout();
+  }
+
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
   updateColor = () => {
     if (window.innerWidth < 993 && this.state.collapseOpen) {
@@ -138,7 +144,7 @@ class AdminNavbar extends React.Component {
                     onClick={this.toggleModalSearch}
                   >
                     <i className="tim-icons icon-zoom-split" />
-                    <span className="d-lg-none d-md-block">Search</span>
+                    <span className="d-lg-none d-md-block">Поиск</span>
                   </Button>
                 </InputGroup>
                 <UncontrolledDropdown nav>
@@ -153,22 +159,20 @@ class AdminNavbar extends React.Component {
                       <img alt="..." src={require("assets/img/anime3.png")} />
                     </div>
                     <b className="caret d-none d-lg-block d-xl-block" />
-                    <p className="d-lg-none">Log out</p>
+                    <p className="d-lg-none">Выйти</p>
                   </DropdownToggle>
                   <DropdownMenu className="dropdown-navbar" right tag="ul">
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">Profile</DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">Settings</DropdownItem>
+                      <DropdownItem className="nav-item">Профиль</DropdownItem>
                     </NavLink>
                     <DropdownItem divider tag="li" />
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">Log out</DropdownItem>
+                      <DropdownItem href="/" className="nav-item" onClick={this.logout}>Выйти</DropdownItem>
                     </NavLink>
                     <DropdownItem divider tag="li" />
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">Version: 1.1</DropdownItem>
+                      <DropdownItem className="nav-item">Логин: {AuthenticationService.getLoggedInUserName()}</DropdownItem>
+                      <DropdownItem className="nav-item">Версия: 1.1</DropdownItem>
                     </NavLink>
                   </DropdownMenu>
                 </UncontrolledDropdown>

@@ -19,29 +19,23 @@ import React from "react";
 
 // reactstrap components
 import {
-    Button,
-    ButtonGroup,
     Card,
     CardHeader,
     CardBody,
     CardTitle,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem,
-    UncontrolledDropdown,
-    Label,
     FormGroup,
     Input,
     Table,
     Row,
     Col,
-    UncontrolledTooltip
 } from "reactstrap";
-import Form from "reactstrap/es/Form";
+import { AvForm, AvField } from 'availity-reactstrap-validation';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from "@material-ui/core/IconButton";
 import Alert from '@material-ui/lab/Alert';
 import Collapse from "@material-ui/core/Collapse";
+import axios from 'axios'
+import ValidatorService from "../service/ValidatorService";
 
 // core components
 
@@ -55,7 +49,11 @@ class Dashboard extends React.Component {
             ip: '',
             description: '',
             data: [],
-            isShowDeleteNotification: false
+            isShowDeleteNotification: false,
+            error: {
+                ip: false,
+                ip_message: 'Не валидный формат ip адреса'
+            }
         };
 
         this.handleChangeName = this.handleChangeName.bind(this);
@@ -162,7 +160,6 @@ class Dashboard extends React.Component {
     render() {
         return (
             <>
-
                 <div className="content">
                     <Collapse in={this.state.isShowDeleteNotification}>
                         <Alert severity={this.state.alertSeverity}>
@@ -176,19 +173,30 @@ class Dashboard extends React.Component {
                                     <h5 className="title">Добавить мониторинг IP</h5>
                                 </CardHeader>
                                 <CardBody>
-                                    <Form onSubmit={this.handleSubmit}>
+                                    <AvForm onValidSubmit={this.handleSubmit}>
                                         <Row>
                                             <Col md="5">
-                                                <label>Имя:</label>
-                                                <Input type="text"
-                                                       placeholder=" Название"
-                                                       onChange={this.handleChangeName}/>
+                                                <AvField
+                                                    name="name"
+                                                    label="Имя:"
+                                                    placeholder="Название"
+                                                    onChange={this.handleChangeName}
+                                                    type="text"
+                                                    errorMessage="Invalid name" validate={{
+                                                    required: {value: true, errorMessage: 'Поле не должно быть пустым'}
+                                                }} />
                                             </Col>
                                             <Col md="7">
-                                                <label>IP</label>
-                                                <Input type="text"
-                                                       placeholder=" IP адрес"
-                                                       onChange={this.handleChangeIp}/>
+                                                <AvField
+                                                    name="ip"
+                                                    label="IP:"
+                                                    placeholder="000.000.000.000"
+                                                    onChange={this.handleChangeIp}
+                                                    type="text"
+                                                    errorMessage="Invalid name" validate={{
+                                                    required: {value: true, errorMessage: 'Поле не должно быть пустым'},
+                                                    pattern: {value: ValidatorService.validateIP_Pattern(), errorMessage: 'Формат IP адреса не валидный'}
+                                                }} />
                                             </Col>
                                         </Row>
                                         <Row>
@@ -208,7 +216,7 @@ class Dashboard extends React.Component {
                                                 <Input type="submit" value="Отправить"/>
                                             </Col>
                                         </Row>
-                                    </Form>
+                                        </AvForm>
                                 </CardBody>
                             </Card>
                         </Col>

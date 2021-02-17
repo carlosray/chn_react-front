@@ -25,14 +25,20 @@ import AdminLayout from "layouts/Admin/Admin.js";
 import "assets/scss/black-dashboard-react.scss";
 import "assets/demo/demo.css";
 import "assets/css/nucleo-icons.css";
+import LoginComponent from "./components/LoginComponent";
+import AuthenticatedRoute from "./components/AuthenticatedRoute";
+import NotFoundPage from "./layouts/NotFoundPage";
 
 const hist = createBrowserHistory();
 
 ReactDOM.render(
   <Router history={hist}>
     <Switch>
-      <Route path="/admin" render={props => <AdminLayout {...props} />} />
-      <Redirect from="/" to="/admin/dashboard" />
+        <Route path="/" exact component={LoginComponent} />
+        <Route path="/login" exact component={LoginComponent} />
+        <AuthenticatedRoute path="/admin/*" exact component={AdminLayout} />
+        <AuthenticatedRoute path="/admin" exact component={AdminLayout} />
+        <Route path="*" component={NotFoundPage} />
     </Switch>
   </Router>,
   document.getElementById("root")
