@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import AuthenticationService from '../service/AuthenticationService';
+import RestService from 'RestService.js';
 import {CardHeader, Card, CardBody, Col, Row} from "reactstrap";
 import {Button} from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
@@ -73,7 +73,7 @@ class LoginComponent extends Component {
             //     this.setState({showSuccessMessage:false})
             //     this.setState({hasLoginFailed:true})
             // }
-            AuthenticationService.registerSuccessfulLogin(this.state.username, this.state.password)
+            RestService.registerSuccessfulLogin(this.state.username, this.state.password)
             this.props.history.push('/admin')
             // AuthenticationService
             //     .executeBasicAuthenticationService(this.state.username, this.state.password)

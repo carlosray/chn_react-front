@@ -33,7 +33,7 @@ import {
     NavLink,
     TabContent
 } from "reactstrap";
-import AuthenticationService from "../service/AuthenticationService";
+import RestService from "RestService.js";
 import Button from "@material-ui/core/Button";
 import ValidatorService from "../service/ValidatorService";
 import {AvField, AvForm} from "availity-reactstrap-validation";
@@ -69,15 +69,6 @@ class UserProfile extends React.Component {
                 [event.target.name]: event.target.value
             }
         )
-    }
-
-    componentDidMount() {
-        fetch('http://localhost:8080/test/json')
-            .then(res => res.json())
-            .then((data) => {
-                this.setState({...data})
-            })
-            .catch(console.log)
     }
 
     handleChangePass() {
@@ -157,7 +148,7 @@ class UserProfile extends React.Component {
                                                             <AvField
                                                                 name="login"
                                                                 disabled
-                                                                defaultValue={AuthenticationService.getLoggedInUserName()}
+                                                                defaultValue={RestService.getLoggedInUserName()}
                                                                 placeholder="Username"
                                                                 type="text"
                                                             />

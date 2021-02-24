@@ -36,7 +36,7 @@ import {
   Container,
   Modal
 } from "reactstrap";
-import AuthenticationService from "../../service/AuthenticationService";
+import RestService from "../../service/RestService";
 
 class AdminNavbar extends React.Component {
   constructor(props) {
@@ -55,7 +55,7 @@ class AdminNavbar extends React.Component {
   }
 
   logout() {
-    AuthenticationService.logout();
+    RestService.logout();
   }
 
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
@@ -171,7 +171,7 @@ class AdminNavbar extends React.Component {
                     </NavLink>
                     <DropdownItem divider tag="li" />
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">Логин: {AuthenticationService.getLoggedInUserName()}</DropdownItem>
+                      <DropdownItem className="nav-item">Логин: {RestService.getLoggedInUserName()}</DropdownItem>
                       <DropdownItem className="nav-item">Версия: 1.1</DropdownItem>
                     </NavLink>
                   </DropdownMenu>

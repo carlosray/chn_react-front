@@ -90,7 +90,7 @@ class Dashboard extends React.Component {
     }
 
     handleSubmit(event) {
-        fetch('http://' + process.env.REACT_APP_BACKEND_HOST + ':8080/test', {
+        fetch('http://' + process.env.REACT_APP_BACKEND_HOST + ':' + process.env.REACT_APP_BACKEND_PORT + '/test', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -122,7 +122,7 @@ class Dashboard extends React.Component {
     }
 
     handleDelete(id, index) {
-        fetch('http://' + process.env.REACT_APP_BACKEND_HOST + ':8080/test/' + id, {
+        fetch('http://' + process.env.REACT_APP_BACKEND_HOST + ':' + process.env.REACT_APP_BACKEND_PORT + '/test/' + id, {
             method: 'DELETE'
         })
             .then(res => {

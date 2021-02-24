@@ -4,7 +4,7 @@ const API_URL = process.env.REACT_APP_BACKEND_HOST + ':' + process.env.REACT_APP
 
 export const USER_NAME_SESSION_ATTRIBUTE_NAME = 'authenticatedUser'
 
-class AuthenticationService {
+class RestService {
 
     executeBasicAuthenticationService(username, password) {
         return axios.get(`${API_URL}/basicauth`,
@@ -68,4 +68,4 @@ class AuthenticationService {
     }
 }
 
-export default new AuthenticationService()
+export default new RestService()
