@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import RestService from 'RestService.js';
+import RestService from '../service/RestService.js';
 import {CardHeader, Card, CardBody, Col, Row} from "reactstrap";
 import {Button} from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
@@ -144,10 +144,6 @@ class LoginComponent extends Component {
                                             type="password"
                                             id="password"
                                             autoComplete="current-password"
-                                        />
-                                        <FormControlLabel
-                                            control={<Checkbox value="remember" color="primary"/>}
-                                            label="Запомнить меня"
                                         />
                                         <Button
                                             disabled={this.state.error.username || this.state.error.password}

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Route, Redirect } from 'react-router-dom'
-import RestService from 'RestService.js';
+import RestService from '../service/RestService.js';
 
 class AuthenticatedRoute extends Component {
     render() {

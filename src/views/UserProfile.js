@@ -33,7 +33,7 @@ import {
     NavLink,
     TabContent
 } from "reactstrap";
-import RestService from "RestService.js";
+import RestService from "../service/RestService.js";
 import Button from "@material-ui/core/Button";
 import ValidatorService from "../service/ValidatorService";
 import {AvField, AvForm} from "availity-reactstrap-validation";
