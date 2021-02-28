@@ -28,6 +28,7 @@ import "assets/css/nucleo-icons.css";
 import LoginComponent from "./components/LoginComponent";
 import AuthenticatedRoute from "./components/AuthenticatedRoute";
 import NotFoundPage from "./layouts/NotFoundPage";
+import RegisterComponent from "./components/RegisterComponent";
 
 const hist = createBrowserHistory();
 
@@ -36,6 +37,7 @@ ReactDOM.render(
     <Switch>
         <Route path="/" exact component={LoginComponent} />
         <Route path="/login" exact component={LoginComponent} />
+        <Route path="/register" exact component={RegisterComponent} />
         <AuthenticatedRoute path="/admin/*" exact component={AdminLayout} />
         <AuthenticatedRoute path="/admin" exact component={AdminLayout} />
         <Route path="*" component={NotFoundPage} />

@@ -8,7 +8,11 @@ class ValidatorService {
     }
 
     validateLogin(login) {
-        return login.match(/^[a-zA-Z0-9]{8,32}$/);
+        return login.match(this.validateLogin_pattern());
+    }
+
+    validateLogin_pattern() {
+        return /^[a-zA-Z0-9]{8,32}$/;
     }
 
     validateMatch(new1, new2) {
@@ -17,6 +21,12 @@ class ValidatorService {
 
     validateIP_Pattern() {
         return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+    }
+
+    getOrDefaultError(ex) {
+        const message = ex?.response?.data?.message
+        console.log(ex?.response?.data)
+        return message ? message : "Ошибка сервера. Попробуйте позже"
     }
 
 }

@@ -36,6 +36,7 @@ import Alert from '@material-ui/lab/Alert';
 import Collapse from "@material-ui/core/Collapse";
 import axios from 'axios'
 import ValidatorService from "../service/ValidatorService";
+import RestService from "../service/RestService";
 
 // core components
 
@@ -72,7 +73,7 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        const apiUrl = 'http://' + process.env.REACT_APP_BACKEND_HOST + ':8080/test';
+        const apiUrl = process.env.REACT_APP_BACKEND_HOST + ':' + process.env.REACT_APP_BACKEND_PORT + '/api/test';
         fetch(apiUrl)
             .then(res => {
                 if (res.status !== 200) {
@@ -90,7 +91,7 @@ class Dashboard extends React.Component {
     }
 
     handleSubmit(event) {
-        fetch('http://' + process.env.REACT_APP_BACKEND_HOST + ':' + process.env.REACT_APP_BACKEND_PORT + '/test', {
+        fetch(process.env.REACT_APP_BACKEND_HOST + ':' + process.env.REACT_APP_BACKEND_PORT + '/api/test', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -122,7 +123,7 @@ class Dashboard extends React.Component {
     }
 
     handleDelete(id, index) {
-        fetch('http://' + process.env.REACT_APP_BACKEND_HOST + ':' + process.env.REACT_APP_BACKEND_PORT + '/test/' + id, {
+        fetch(process.env.REACT_APP_BACKEND_HOST + ':' + process.env.REACT_APP_BACKEND_PORT + '/api/test/' + id, {
             method: 'DELETE'
         })
             .then(res => {
@@ -148,7 +149,7 @@ class Dashboard extends React.Component {
         this.setState({alertSeverity: severity});
         setTimeout(() => {
             this.setState({
-                isShowDeleteNotification: false
+                isShowNotification: false
             })
         }, 3000)
     }

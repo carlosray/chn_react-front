@@ -146,7 +146,7 @@ class UserProfile extends React.Component {
                                                         <FormGroup>
                                                             <label>Логин</label>
                                                             <AvField
-                                                                name="login"
+                                                                name="username"
                                                                 disabled
                                                                 defaultValue={RestService.getLoggedInUserName()}
                                                                 placeholder="Username"

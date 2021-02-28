@@ -6,28 +6,17 @@ export const USER_NAME_SESSION_ATTRIBUTE_NAME = 'authenticatedUser'
 
 class RestService {
 
-    executeBasicAuthenticationService(username, password) {
-        return axios.get(`${API_URL}/basicauth`,
-            { headers: { authorization: this.createBasicAuthToken(username, password) } })
-    }
-
     executeJwtAuthenticationService(username, password) {
-        console.log(username);
-        return axios.post(`${API_URL}/authenticate`, {
+        return axios.post(`${API_URL}/auth/login`, {
             username,
             password
         })
     }
 
-    createBasicAuthToken(username, password) {
-        return 'Basic ' + window.btoa(username + ":" + password)
-    }
+    executeRegisterService(values) {
 
-    registerSuccessfulLogin(username, password) {
-        //let basicAuthHeader = 'Basic ' +  window.btoa(username + ":" + password)
-        //console.log('registerSuccessfulLogin')
-        sessionStorage.setItem(USER_NAME_SESSION_ATTRIBUTE_NAME, username)
-        this.setupAxiosInterceptors(this.createBasicAuthToken(username, password))
+        return axios.post(`${API_URL}/auth/register`, values)
+
     }
 
     registerSuccessfulLoginForJwt(username, token) {
@@ -38,7 +27,6 @@ class RestService {
     createJWTToken(token) {
         return 'Bearer ' + token
     }
-
 
     logout() {
         sessionStorage.removeItem(USER_NAME_SESSION_ATTRIBUTE_NAME);

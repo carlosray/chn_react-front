@@ -1,12 +1,10 @@
 import React, {Component} from 'react'
 import RestService from '../service/RestService.js';
-import {CardHeader, Card, CardBody, Col, Row} from "reactstrap";
+import {CardHeader, Card, CardBody, Col, Row, Alert} from "reactstrap";
 import {Button} from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Grid from "@material-ui/core/Grid";
 import Link from "@material-ui/core/Link";
-import Checkbox from "@material-ui/core/Checkbox";
 import ValidatorService from "../service/ValidatorService";
 
 class LoginComponent extends Component {
@@ -18,8 +16,9 @@ class LoginComponent extends Component {
         this.state = {
             username: '',
             password: '',
-            hasLoginFailed: false,
-            showSuccessMessage: false,
+            isShowAlert: false,
+            alertSeverity: 'info',
+            alertMessage: 'Что-то произошло.. :)',
             error: {
                 password: false,
                 username: false,
@@ -58,46 +57,43 @@ class LoginComponent extends Component {
         }
     }
 
+    showAlert(message, severity, delay) {
+        this.setState({isShowAlert: true});
+        this.setState({alertMessage: message});
+        this.setState({alertSeverity: severity});
+        setTimeout(() => {
+            this.setState({
+                isShowAlert: false
+            })
+        }, delay)
+
+    }
+
     loginClicked() {
         if (ValidatorService.validateLogin(this.state.username) &&
             ValidatorService.validatePwd(this.state.password)) {
-            console.log("1")
-            //in28minutes,dummy
-            // if(this.state.username==='in28minutes' && this.state.password==='dummy'){
-            //     AuthenticationService.registerSuccessfulLogin(this.state.username,this.state.password)
-            //     this.props.history.push(`/courses`)
-            //     //this.setState({showSuccessMessage:true})
-            //     //this.setState({hasLoginFailed:false})
-            // }
-            // else {
-            //     this.setState({showSuccessMessage:false})
-            //     this.setState({hasLoginFailed:true})
-            // }
-            RestService.registerSuccessfulLogin(this.state.username, this.state.password)
-            this.props.history.push('/admin')
-            // AuthenticationService
-            //     .executeBasicAuthenticationService(this.state.username, this.state.password)
-            //     .then(() => {
-            //         AuthenticationService.registerSuccessfulLogin(this.state.username, this.state.password)
-            //         this.props.history.push(`/courses`)
-            //     }).catch(() => {
-            //     this.setState({ showSuccessMessage: false })
-            //     this.setState({ hasLoginFailed: true })
-            // })
 
-            // AuthenticationService
-            //     .executeJwtAuthenticationService(this.state.username, this.state.password)
-            //     .then((response) => {
-            //         AuthenticationService.registerSuccessfulLoginForJwt(this.state.username, response.data.token)
-            //         this.props.history.push(`/courses`)
-            //     }).catch(() => {
-            //         this.setState({ showSuccessMessage: false })
-            //         this.setState({ hasLoginFailed: true })
-            //     })
+            RestService
+                .executeJwtAuthenticationService(this.state.username, this.state.password)
+                .then((response) => {
+                    const token = response?.data?.jwt;
+                    if (token) {
+                        RestService.registerSuccessfulLoginForJwt(this.state.username, response.data.jwt)
+                        this.showAlert("Успешная авторизация", "success", 2000)
+                        setTimeout(() => {
+                            this.props.history.push(`/admin`)
+                        }, 2000)
+                    }
+                    else {
+                        throw new Error("Нет токена в ответе от сервера")
+                    }
+                })
+                .catch((ex) => {
+                    this.showAlert(ValidatorService.getOrDefaultError(ex), "warning", 6000)
+                })
         } else {
-            console.log("2")
-            this.state.error.username=true;
-            this.state.error.password=true;
+            this.state.error.username = true;
+            this.state.error.password = true;
             this.forceUpdate();
         }
     }
@@ -111,9 +107,10 @@ class LoginComponent extends Component {
                         <Col xl="4" lg="5" md="5">
                             <Card>
                                 <CardHeader>
-                                    {this.state.hasLoginFailed &&
-                                    <div className="alert alert-warning">Invalid Credentials</div>}
-                                    {this.state.showSuccessMessage && <div>Login Successful</div>}
+                                    {this.state.isShowAlert &&
+                                    <Alert color={this.state.alertSeverity}>
+                                        {this.state.alertMessage}
+                                    </Alert>}
                                 </CardHeader>
                                 <CardBody>
                                     <form noValidate>
@@ -161,7 +158,7 @@ class LoginComponent extends Component {
                                                 </Link>
                                             </Grid>
                                             <Grid item>
-                                                <Link href="#" variant="body2">
+                                                <Link href="/register" variant="body2">
                                                     {"Нет аккаунта? Зарегистрироваться"}
                                                 </Link>
                                             </Grid>
