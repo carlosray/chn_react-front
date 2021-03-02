@@ -217,6 +217,11 @@ class RegisterComponent extends Component {
                                                 Назад
                                             </Button>
                                         </Col>
+                                        <Col md="3">
+                                            <Button variant="contained" color="dark" onClick={RestService.logout} >
+                                                Logout
+                                            </Button>
+                                        </Col>
                                     </Row>
                                 </CardFooter>
                             </AvForm>

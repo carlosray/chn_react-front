@@ -30,7 +30,6 @@ class LoginComponent extends Component {
             submitEnabled: false
         }
 
-
         this.handleChange = this.handleChange.bind(this)
         this.loginClicked = this.loginClicked.bind(this)
     }
@@ -101,12 +100,15 @@ class LoginComponent extends Component {
     render() {
         return (
             <>
-
                 <div className="content">
                     <Row className="justify-content-center">
                         <Col xl="4" lg="5" md="5">
                             <Card>
                                 <CardHeader>
+                                    {RestService.state.show &&
+                                    <Alert color="info">
+                                        Необходимо авторизоваться. Таймаут
+                                    </Alert>}
                                     {this.state.isShowAlert &&
                                     <Alert color={this.state.alertSeverity}>
                                         {this.state.alertMessage}

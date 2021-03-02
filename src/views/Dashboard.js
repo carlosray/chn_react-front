@@ -73,59 +73,45 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        const apiUrl = process.env.REACT_APP_BACKEND_HOST + ':' + process.env.REACT_APP_BACKEND_PORT + '/api/test';
-        fetch(apiUrl)
+        RestService.executeApiGetAll()
             .then(res => {
                 if (res.status !== 200) {
                     this.handleShowAlert("Ошибка при получении записей", "error");
-                    console.log(res);
-                    throw new Error('Response not 200 (ok).');
+                    throw new Error('Response not 200 (ok).' + res?.data?.message);
+                } else {
+                    this.setState({data: res.data});
                 }
-                return res.json();
             })
-            .then(resJson => {
-                    this.setState({data: resJson});
-                }
-            )
             .catch(console.log)
     }
 
     handleSubmit(event) {
-        fetch(process.env.REACT_APP_BACKEND_HOST + ':' + process.env.REACT_APP_BACKEND_PORT + '/api/test', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({name: this.state.name, ip: this.state.ip, description: this.state.description})
-        })
+        RestService.executeApiAddNew(this.state.name, this.state.ip, this.state.description)
             .then(res => {
-                if (res.status === 200) {
-                    return res.json();
-                } else {
-                    this.handleShowAlert("Ошибка! Запись не сохранена", "error");
-                    console.log(res);
-                    throw new Error('Response not 200 (ok).');
+                switch (res.status) {
+                    case 200:
+                        this.setState(function (prevState, props) {
+                            const prevData = prevState.data;
+                            prevData.push(res.data)
+                            return {data: prevData}
+                        });
+                        this.handleShowAlert("Успешно сохранена запись", "success");
+                        break;
+                    case 401:
+                        RestService.logout()
+                        break;
+                    default:
+                        this.handleShowAlert("Ошибка! Запись не сохранена", "error");
+                        throw new Error('Response not 200 (ok).' + res?.data?.message);
                 }
             })
-            .then(resJson => {
-                this.setState(function (prevState, props) {
-                    const prevData = prevState.data;
-                    prevData.push(resJson)
-                    return {data: prevData}
-                });
-                this.handleShowAlert("Успешно сохранена запись", "success");
-            })
             .catch(console.log);
-
 
         event.preventDefault();
     }
 
     handleDelete(id, index) {
-        fetch(process.env.REACT_APP_BACKEND_HOST + ':' + process.env.REACT_APP_BACKEND_PORT + '/api/test/' + id, {
-            method: 'DELETE'
-        })
+        RestService.executeApiDelete(id)
             .then(res => {
                 if (res.status === 204) {
                     this.setState(function (prevState, props) {
@@ -136,8 +122,7 @@ class Dashboard extends React.Component {
                     this.handleShowAlert("Успешно удалена запись", "success");
                 } else {
                     this.handleShowAlert("Ошибка! Запись не удалена", "error");
-                    console.log(res);
-                    throw new Error('Response not 204 (no content).');
+                    throw new Error('Response not 204 (no content).' + res?.data?.message);
                 }
             })
             .catch(console.log);
