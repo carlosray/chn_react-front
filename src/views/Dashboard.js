@@ -19,6 +19,7 @@ import React from "react";
 
 // reactstrap components
 import {
+    Alert,
     Card,
     CardHeader,
     CardBody,
@@ -32,8 +33,6 @@ import {
 import {AvForm, AvField} from 'availity-reactstrap-validation';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from "@material-ui/core/IconButton";
-import Alert from '@material-ui/lab/Alert';
-import Collapse from "@material-ui/core/Collapse";
 import axios from 'axios'
 import ValidatorService from "../service/ValidatorService";
 import RestService from "../service/RestService";
@@ -50,7 +49,7 @@ class Dashboard extends React.Component {
             ip: '',
             description: '',
             data: [],
-            isShowNotification: false
+            isShowAlert: false
         };
 
         this.handleChangeName = this.handleChangeName.bind(this);
@@ -75,37 +74,26 @@ class Dashboard extends React.Component {
     componentDidMount() {
         RestService.executeApiGetAll()
             .then(res => {
-                if (res.status !== 200) {
-                    this.handleShowAlert("Ошибка при получении записей", "error");
-                    throw new Error('Response not 200 (ok).' + res?.data?.message);
-                } else {
-                    this.setState({data: res.data});
-                }
+                this.setState({data: res.data});
             })
-            .catch(console.log)
+            .catch((ex) => {
+                this.showAlert(ValidatorService.getOrDefaultError(ex, "Ошибка при получении записей"), "warning", 3000)
+            })
     }
 
     handleSubmit(event) {
         RestService.executeApiAddNew(this.state.name, this.state.ip, this.state.description)
             .then(res => {
-                switch (res.status) {
-                    case 200:
-                        this.setState(function (prevState, props) {
-                            const prevData = prevState.data;
-                            prevData.push(res.data)
-                            return {data: prevData}
-                        });
-                        this.handleShowAlert("Успешно сохранена запись", "success");
-                        break;
-                    case 401:
-                        RestService.logout()
-                        break;
-                    default:
-                        this.handleShowAlert("Ошибка! Запись не сохранена", "error");
-                        throw new Error('Response not 200 (ok).' + res?.data?.message);
-                }
+                this.setState(function (prevState, props) {
+                    const prevData = prevState.data;
+                    prevData.push(res.data)
+                    return {data: prevData}
+                });
+                this.showAlert("Успешно сохранена запись", "success", 3000);
             })
-            .catch(console.log);
+            .catch((ex) => {
+                this.showAlert(ValidatorService.getOrDefaultError(ex, "Ошибка! Запись не сохранена"), "warning", 3000)
+            });
 
         event.preventDefault();
     }
@@ -113,41 +101,38 @@ class Dashboard extends React.Component {
     handleDelete(id, index) {
         RestService.executeApiDelete(id)
             .then(res => {
-                if (res.status === 204) {
-                    this.setState(function (prevState, props) {
-                        const prevData = prevState.data;
-                        delete prevData[index];
-                        return {data: prevData}
-                    });
-                    this.handleShowAlert("Успешно удалена запись", "success");
-                } else {
-                    this.handleShowAlert("Ошибка! Запись не удалена", "error");
-                    throw new Error('Response not 204 (no content).' + res?.data?.message);
-                }
+                this.setState(function (prevState, props) {
+                    const prevData = prevState.data;
+                    delete prevData[index];
+                    return {data: prevData}
+                });
+                this.showAlert("Успешно удалена запись", "success", 3000);
             })
-            .catch(console.log);
+            .catch((ex) => {
+                this.showAlert(ValidatorService.getOrDefaultError(ex, "Ошибка! Запись не удалена"), "warning", 3000)
+            });
     }
 
-    handleShowAlert(message, severity) {
-        this.setState({isShowNotification: true});
+    showAlert(message, severity, delay) {
+        this.setState({isShowAlert: true});
         this.setState({alertMessage: message});
         this.setState({alertSeverity: severity});
         setTimeout(() => {
             this.setState({
-                isShowNotification: false
+                isShowAlert: false
             })
-        }, 3000)
+        }, delay)
+
     }
 
     render() {
         return (
             <>
                 <div className="content">
-                    <Collapse in={this.state.isShowNotification}>
-                        <Alert severity={this.state.alertSeverity}>
-                            {this.state.alertMessage}
-                        </Alert>
-                    </Collapse>
+                    {this.state.isShowAlert &&
+                    <Alert color={this.state.alertSeverity}>
+                        {this.state.alertMessage}
+                    </Alert>}
                     <Row>
                         <Col md="8">
                             <Card>

@@ -50,7 +50,7 @@ class RegisterComponent extends Component {
                 }, 2000)
             })
             .catch((ex) => {
-                this.showAlert(ValidatorService.getOrDefaultError(ex), "warning", 6000)
+                this.showAlert(ValidatorService.getOrDefaultError(ex, "Ошибка сервера. Попробуйте позже"), "warning", 6000)
             })
     }
 
@@ -215,11 +215,6 @@ class RegisterComponent extends Component {
                                         <Col md="3">
                                             <Button variant="contained" color="dark" href={"/login"} >
                                                 Назад
-                                            </Button>
-                                        </Col>
-                                        <Col md="3">
-                                            <Button variant="contained" color="dark" onClick={RestService.logout} >
-                                                Logout
                                             </Button>
                                         </Col>
                                     </Row>

@@ -81,14 +81,14 @@ class LoginComponent extends Component {
                         this.showAlert("Успешная авторизация", "success", 2000)
                         setTimeout(() => {
                             this.props.history.push(`/admin`)
-                        }, 2000)
+                        }, 1000)
                     }
                     else {
                         throw new Error("Нет токена в ответе от сервера")
                     }
                 })
                 .catch((ex) => {
-                    this.showAlert(ValidatorService.getOrDefaultError(ex), "warning", 6000)
+                    this.showAlert(ValidatorService.getOrDefaultError(ex, "Ошибка сервера. Попробуйте позже"), "warning", 6000)
                 })
         } else {
             this.state.error.username = true;
@@ -105,10 +105,6 @@ class LoginComponent extends Component {
                         <Col xl="4" lg="5" md="5">
                             <Card>
                                 <CardHeader>
-                                    {RestService.state.show &&
-                                    <Alert color="info">
-                                        Необходимо авторизоваться. Таймаут
-                                    </Alert>}
                                     {this.state.isShowAlert &&
                                     <Alert color={this.state.alertSeverity}>
                                         {this.state.alertMessage}

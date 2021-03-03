@@ -23,10 +23,10 @@ class ValidatorService {
         return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
     }
 
-    getOrDefaultError(ex) {
+    getOrDefaultError(ex, def) {
         const message = ex?.response?.data?.message
         console.log(ex?.response?.data)
-        return message ? message : "Ошибка сервера. Попробуйте позже"
+        return message ? message : def
     }
 
 }

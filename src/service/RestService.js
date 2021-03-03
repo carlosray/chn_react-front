@@ -1,5 +1,4 @@
 import axios from 'axios'
-import {Component} from "react";
 
 const API_URL = process.env.REACT_APP_BACKEND_URI + "/api"
 const AUTH_URL = process.env.REACT_APP_BACKEND_URI + "/auth"
@@ -7,6 +6,11 @@ const AUTH_URL = process.env.REACT_APP_BACKEND_URI + "/auth"
 export const USER_NAME_SESSION_ATTRIBUTE_NAME = 'authenticatedUser'
 
 class RestService {
+
+
+    constructor() {
+        this.setupAxiosResponseInterceptors();
+    }
 
     executeJwtAuthenticationService(username, password) {
         return axios.post(`${AUTH_URL}/login`, {
@@ -32,6 +36,7 @@ class RestService {
     executeApiDelete(id) {
         return axios.delete(`${API_URL}/test/` + id)
     }
+
     registerSuccessfulLoginForJwt(username, token) {
         sessionStorage.setItem(USER_NAME_SESSION_ATTRIBUTE_NAME, username)
         this.setupAxiosInterceptors(this.createJWTToken(token))
@@ -67,6 +72,17 @@ class RestService {
                 return config
             }
         )
+    }
+
+    setupAxiosResponseInterceptors() {
+        axios.interceptors.response.use(undefined, error => {
+            if (error.response.status === 401) {
+                this.logout()
+            }
+            else {
+                return Promise.reject(error)
+            }
+        });
     }
 }
 
