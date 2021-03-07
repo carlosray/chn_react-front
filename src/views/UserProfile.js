@@ -18,21 +18,7 @@
 import React from "react";
 
 // reactstrap components
-import {
-    Alert,
-    TabPane,
-    Nav,
-    Card,
-    CardHeader,
-    CardBody,
-    CardFooter,
-    FormGroup,
-    Row,
-    Col,
-    NavItem,
-    NavLink,
-    TabContent
-} from "reactstrap";
+import {Alert, Card, CardBody, CardFooter, CardHeader, Col, FormGroup, Nav, NavItem, NavLink, Row, TabContent, TabPane} from "reactstrap";
 import RestService from "../service/RestService.js";
 import Button from "@material-ui/core/Button";
 import ValidatorService from "../service/ValidatorService";

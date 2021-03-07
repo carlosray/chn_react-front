@@ -20,22 +20,7 @@ import React from "react";
 import classNames from "classnames";
 
 // reactstrap components
-import {
-  Button,
-  Collapse,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  Input,
-  InputGroup,
-  NavbarBrand,
-  Navbar,
-  NavLink,
-  Nav,
-  Container,
-  Modal
-} from "reactstrap";
+import {Button, Collapse, Container, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, Modal, Nav, Navbar, NavbarBrand, NavLink, UncontrolledDropdown} from "reactstrap";
 import RestService from "../../service/RestService";
 
 class AdminNavbar extends React.Component {

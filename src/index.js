@@ -17,8 +17,8 @@
 */
 import React from "react";
 import ReactDOM from "react-dom";
-import { createBrowserHistory } from "history";
-import { Router, Route, Switch, Redirect } from "react-router-dom";
+import {createBrowserHistory} from "history";
+import {Route, Router, Switch} from "react-router-dom";
 
 import AdminLayout from "layouts/Admin/Admin.js";
 
@@ -29,12 +29,25 @@ import LoginComponent from "./components/LoginComponent";
 import AuthenticatedRoute from "./components/AuthenticatedRoute";
 import NotFoundPage from "./layouts/NotFoundPage";
 import RegisterComponent from "./components/RegisterComponent";
+import RestService from "./service/RestService";
 
 const hist = createBrowserHistory();
+RestService.setupAxiosInterceptors();
+
+function getRoutes() {
+    if (RestService.isUserLoggedIn()) {
+        return (
+            <Route path="/admin" exact component={AdminLayout}/>
+        );
+    } else {
+        return null;
+    }
+}
 
 ReactDOM.render(
   <Router history={hist}>
     <Switch>
+        {getRoutes()}
         <Route path="/" exact component={LoginComponent} />
         <Route path="/login" exact component={LoginComponent} />
         <Route path="/register" exact component={RegisterComponent} />

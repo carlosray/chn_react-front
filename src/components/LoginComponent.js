@@ -1,11 +1,12 @@
 import React, {Component} from 'react'
 import RestService from '../service/RestService.js';
-import {CardHeader, Card, CardBody, Col, Row, Alert} from "reactstrap";
+import {Alert, Card, CardBody, CardHeader, Col, Row} from "reactstrap";
 import {Button} from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import Link from "@material-ui/core/Link";
 import ValidatorService from "../service/ValidatorService";
+import {Redirect} from "react-router-dom";
 
 class LoginComponent extends Component {
 
@@ -79,11 +80,7 @@ class LoginComponent extends Component {
                     if (token) {
                         RestService.registerSuccessfulLoginForJwt(this.state.username, response.data.jwt)
                         this.showAlert("Успешная авторизация", "success", 2000)
-                        setTimeout(() => {
-                            this.props.history.push(`/admin`)
-                        }, 1000)
-                    }
-                    else {
+                    } else {
                         throw new Error("Нет токена в ответе от сервера")
                     }
                 })
@@ -101,6 +98,7 @@ class LoginComponent extends Component {
         return (
             <>
                 <div className="content">
+                    {RestService.isUserLoggedIn() && <Redirect to="/admin"/>}
                     <Row className="justify-content-center">
                         <Col xl="4" lg="5" md="5">
                             <Card>

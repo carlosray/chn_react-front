@@ -15,10 +15,9 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { Component } from "react";
+import React, {Component} from "react";
 
 // reactstrap components
-import { Button } from "reactstrap";
 
 class FixedPlugin extends Component {
   constructor(props) {

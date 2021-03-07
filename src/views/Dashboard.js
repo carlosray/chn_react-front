@@ -18,22 +18,10 @@
 import React from "react";
 
 // reactstrap components
-import {
-    Alert,
-    Card,
-    CardHeader,
-    CardBody,
-    CardTitle,
-    FormGroup,
-    Input,
-    Table,
-    Row,
-    Col,
-} from "reactstrap";
-import {AvForm, AvField} from 'availity-reactstrap-validation';
+import {Alert, Card, CardBody, CardHeader, CardTitle, Col, FormGroup, Input, Row, Table,} from "reactstrap";
+import {AvField, AvForm} from 'availity-reactstrap-validation';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from "@material-ui/core/IconButton";
-import axios from 'axios'
 import ValidatorService from "../service/ValidatorService";
 import RestService from "../service/RestService";
 

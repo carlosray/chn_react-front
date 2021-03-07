@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
 import RestService from '../service/RestService.js';
-import {CardHeader, Card, CardBody, Col, Row, Alert, FormGroup, CardFooter, Button} from "reactstrap";
+import {Alert, Button, Card, CardBody, CardFooter, CardHeader, Col, FormGroup, Row} from "reactstrap";
 import ValidatorService from "../service/ValidatorService";
 import {AvField, AvForm} from "availity-reactstrap-validation";
+import {Redirect, Switch} from "react-router-dom";
 
 class RegisterComponent extends Component {
 
@@ -16,13 +17,13 @@ class RegisterComponent extends Component {
             alertMessage: 'Что-то произошло.. :)',
         }
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.showAlert = this.showAlert.bind(this)
     }
 
     handleSubmit(event, errors, values) {
         if (Array.isArray(errors) && errors.length) {
             console.log(JSON.stringify(errors, null, 2))
-        }
-        else {
+        } else {
             this.tryRegister(values)
         }
     }
@@ -59,18 +60,21 @@ class RegisterComponent extends Component {
             <>
 
                 <div className="content">
+                    <Switch>
+                        {RestService.isUserLoggedIn() && <Redirect to="/admin"/>}
+                    </Switch>
                     <Row className="justify-content-center">
                         <Col xl="6" lg="7" md="8">
                             <Card>
                                 <AvForm onSubmit={this.handleSubmit}>
-                                <CardHeader>
-                                    {this.state.isShowAlert &&
-                                    <Alert color={this.state.alertSeverity}>
-                                        {this.state.alertMessage}
-                                    </Alert>}
-                                    <h2 align={"center"}>Регистрация</h2>
-                                </CardHeader>
-                                <CardBody>
+                                    <CardHeader>
+                                        {this.state.isShowAlert &&
+                                        <Alert color={this.state.alertSeverity}>
+                                            {this.state.alertMessage}
+                                        </Alert>}
+                                        <h2 align={"center"}>Регистрация</h2>
+                                    </CardHeader>
+                                    <CardBody>
 
                                         <Row>
                                             <Col md="6">
@@ -204,22 +208,22 @@ class RegisterComponent extends Component {
                                             </Col>
                                         </Row>
 
-                                </CardBody>
-                                <CardFooter>
-                                    <Row>
-                                        <Col md="8">
-                                                <Button variant="contained" color="info" type="submit" >
+                                    </CardBody>
+                                    <CardFooter>
+                                        <Row>
+                                            <Col md="8">
+                                                <Button variant="contained" color="info" type="submit">
                                                     Зарегистрироваться
                                                 </Button>
-                                        </Col>
-                                        <Col md="3">
-                                            <Button variant="contained" color="dark" href={"/login"} >
-                                                Назад
-                                            </Button>
-                                        </Col>
-                                    </Row>
-                                </CardFooter>
-                            </AvForm>
+                                            </Col>
+                                            <Col md="3">
+                                                <Button variant="contained" color="dark" href={"/login"}>
+                                                    Назад
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    </CardFooter>
+                                </AvForm>
                             </Card>
                         </Col>
                     </Row>

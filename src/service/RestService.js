@@ -4,13 +4,9 @@ const API_URL = process.env.REACT_APP_BACKEND_URI + "/api"
 const AUTH_URL = process.env.REACT_APP_BACKEND_URI + "/auth"
 
 export const USER_NAME_SESSION_ATTRIBUTE_NAME = 'authenticatedUser'
+export const TOKEN_SESSION_ATTRIBUTE_NAME = 'jwtToken'
 
 class RestService {
-
-
-    constructor() {
-        this.setupAxiosResponseInterceptors();
-    }
 
     executeJwtAuthenticationService(username, password) {
         return axios.post(`${AUTH_URL}/login`, {
@@ -38,8 +34,8 @@ class RestService {
     }
 
     registerSuccessfulLoginForJwt(username, token) {
-        sessionStorage.setItem(USER_NAME_SESSION_ATTRIBUTE_NAME, username)
-        this.setupAxiosInterceptors(this.createJWTToken(token))
+        localStorage.setItem(USER_NAME_SESSION_ATTRIBUTE_NAME, username)
+        localStorage.setItem(TOKEN_SESSION_ATTRIBUTE_NAME, token)
     }
 
     createJWTToken(token) {
@@ -47,42 +43,45 @@ class RestService {
     }
 
     logout() {
-        sessionStorage.removeItem(USER_NAME_SESSION_ATTRIBUTE_NAME);
+        localStorage.removeItem(USER_NAME_SESSION_ATTRIBUTE_NAME);
         document.location.href = '/login'
     }
 
     isUserLoggedIn() {
-        let user = sessionStorage.getItem(USER_NAME_SESSION_ATTRIBUTE_NAME)
+        let user = localStorage.getItem(USER_NAME_SESSION_ATTRIBUTE_NAME)
         if (user === null) return false
         return true
     }
 
     getLoggedInUserName() {
-        let user = sessionStorage.getItem(USER_NAME_SESSION_ATTRIBUTE_NAME)
+        let user = localStorage.getItem(USER_NAME_SESSION_ATTRIBUTE_NAME)
         if (user === null) return ''
         return user
     }
 
-    setupAxiosInterceptors(token) {
+    setupAxiosInterceptors() {
         axios.interceptors.request.use(
             (config) => {
                 if (this.isUserLoggedIn()) {
-                    config.headers.authorization = token
+                    config.headers.authorization = this.createJWTToken(localStorage.getItem(TOKEN_SESSION_ATTRIBUTE_NAME))
                 }
                 return config
             }
         )
-    }
+        axios.interceptors.response.use(
+            (response) => {
+                if (response.status !== 401) {
 
-    setupAxiosResponseInterceptors() {
-        axios.interceptors.response.use(undefined, error => {
-            if (error.response.status === 401) {
-                this.logout()
-            }
-            else {
-                return Promise.reject(error)
-            }
-        });
+                }
+                return response;
+            },
+            error => {
+                if (error.response.status === 401) {
+                    this.logout()
+                } else {
+                    return Promise.reject(error)
+                }
+            });
     }
 }
 
