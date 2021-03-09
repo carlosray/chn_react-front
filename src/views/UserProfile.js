@@ -38,14 +38,33 @@ class UserProfile extends React.Component {
             password_old: '',
             password_new: '',
             password_new_confirm: '',
+            city: '',
+            company: '',
+            country: '',
+            email: '',
+            firstName: '',
+            info: '',
+            lastName: ''
         }
-        this.handleChange = this.handleChange.bind(this)
-        this.handleChangePass = this.handleChangePass.bind(this)
         this.toggle = this.toggle.bind(this)
+        this.handleChange = this.handleChange.bind(this)
+        this.saveInfo = this.saveInfo.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
+        this.handleChangePass = this.handleChangePass.bind(this)
     }
 
     toggle = tab => {
         if (this.state.activeTab !== tab) this.setState({activeTab: tab});
+    }
+
+    componentDidMount() {
+        RestService.executeApiUserInfo()
+            .then(res => {
+                this.setState({...res.data});
+            })
+            .catch((ex) => {
+                this.handleShowProfileAlert(ValidatorService.getOrDefaultError(ex, "Ошибка при получении пользовательской инфо"), "warning", 3000)
+            })
     }
 
 
@@ -55,6 +74,24 @@ class UserProfile extends React.Component {
                 [event.target.name]: event.target.value
             }
         )
+    }
+
+    handleSubmit(event, errors, values) {
+        if (Array.isArray(errors) && errors.length) {
+            console.log(JSON.stringify(errors, null, 2))
+        } else {
+            this.saveInfo(values)
+        }
+    }
+
+    saveInfo(values) {
+        RestService.executeApiSaveUserInfo(values)
+            .then(res => {
+                this.handleShowProfileAlert("Пользователь успешно сохранен", "success", 3000);
+            })
+            .catch((ex) => {
+                this.handleShowProfileAlert(ValidatorService.getOrDefaultError(ex, "Ошибка! Пользователь не сохранен"), "warning", 3000)
+            });
     }
 
     handleChangePass() {
@@ -125,8 +162,8 @@ class UserProfile extends React.Component {
                                                 {this.state.alertMessage}
                                             </Alert>}
                                         </CardHeader>
-                                        <CardBody>
-                                            <AvForm>
+                                        <AvForm onSubmit={this.handleSubmit}>
+                                            <CardBody>
                                                 <Row>
                                                     <Col md="4">
                                                         <FormGroup>
@@ -134,7 +171,7 @@ class UserProfile extends React.Component {
                                                             <AvField
                                                                 name="username"
                                                                 disabled
-                                                                defaultValue={RestService.getLoggedInUserName()}
+                                                                value={RestService.getLoggedInUserName()}
                                                                 placeholder="Username"
                                                                 type="text"
                                                             />
@@ -147,6 +184,7 @@ class UserProfile extends React.Component {
                                                                 label="Email"
                                                                 required
                                                                 placeholder="mike@email.com"
+                                                                value={this.state.email}
                                                                 type="email"
                                                                 errorMessage="Некорректный Email"/>
                                                         </FormGroup>
@@ -158,8 +196,8 @@ class UserProfile extends React.Component {
                                                         <FormGroup>
                                                             <label>Имя</label>
                                                             <AvField
-                                                                name="first-name"
-                                                                defaultValue={""}
+                                                                name="firstName"
+                                                                value={this.state.firstName}
                                                                 placeholder={"Иван"}
                                                                 type="text"
                                                             />
@@ -169,8 +207,8 @@ class UserProfile extends React.Component {
                                                         <FormGroup>
                                                             <label>Фамилия</label>
                                                             <AvField
-                                                                name="last-name"
-                                                                defaultValue={""}
+                                                                name="lastName"
+                                                                value={this.state.lastName}
                                                                 placeholder={"Иванов"}
                                                                 type="text"
                                                             />
@@ -183,6 +221,7 @@ class UserProfile extends React.Component {
                                                             <label>Город</label>
                                                             <AvField
                                                                 name="city"
+                                                                value={this.state.city}
                                                                 placeholder="Moscow"
                                                                 type="text"
                                                             />
@@ -193,16 +232,18 @@ class UserProfile extends React.Component {
                                                             <label>Страна</label>
                                                             <AvField
                                                                 name="country"
+                                                                value={this.state.country}
                                                                 placeholder="Russia"
                                                                 type="text"
                                                             />
                                                         </FormGroup>
                                                     </Col>
-                                                    <Col  md="4">
+                                                    <Col md="4">
                                                         <FormGroup>
                                                             <label>Компания</label>
                                                             <AvField
                                                                 name="company"
+                                                                value={this.state.company}
                                                                 placeholder="Company"
                                                                 type="text"
                                                             />
@@ -215,9 +256,8 @@ class UserProfile extends React.Component {
                                                             <label>Дополнительная информация</label>
                                                             <AvField
                                                                 name="info"
+                                                                value={this.state.info}
                                                                 cols="80"
-                                                                defaultValue="Ака, ака, ак-47!
-                                                                У щет мэн, гат дем"
                                                                 placeholder="Here can be your description"
                                                                 rows="4"
                                                                 type="textarea"
@@ -225,23 +265,24 @@ class UserProfile extends React.Component {
                                                         </FormGroup>
                                                     </Col>
                                                 </Row>
-                                            </AvForm>
-                                        </CardBody>
-                                        <CardFooter>
-                                            <Row>
-                                                <Col md="8">
-                                                    <Button variant="contained" color="primary" type="submit">
-                                                        Сохранить
-                                                    </Button>
-                                                </Col>
 
-                                                <Col md="4">
-                                                    <Button color="secondary">
-                                                        Удалить аккаунт
-                                                    </Button>
-                                                </Col>
-                                            </Row>
-                                        </CardFooter>
+                                            </CardBody>
+                                            <CardFooter>
+                                                <Row>
+                                                    <Col md="8">
+                                                        <Button variant="contained" color="primary" type="submit">
+                                                            Сохранить
+                                                        </Button>
+                                                    </Col>
+
+                                                    <Col md="4">
+                                                        <Button color="secondary">
+                                                            Удалить аккаунт
+                                                        </Button>
+                                                    </Col>
+                                                </Row>
+                                            </CardFooter>
+                                        </AvForm>
                                     </Card>
                                 </Col>
                             </Row>

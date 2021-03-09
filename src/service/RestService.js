@@ -33,6 +33,14 @@ class RestService {
         return axios.delete(`${API_URL}/test/` + id)
     }
 
+    executeApiUserInfo() {
+        return axios.get(`${API_URL}/user`)
+    }
+
+    executeApiSaveUserInfo(values) {
+        return axios.post(`${API_URL}/user`, values)
+    }
+
     registerSuccessfulLoginForJwt(username, token) {
         localStorage.setItem(USER_NAME_SESSION_ATTRIBUTE_NAME, username)
         localStorage.setItem(TOKEN_SESSION_ATTRIBUTE_NAME, token)
