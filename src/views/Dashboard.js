@@ -18,12 +18,14 @@
 import React from "react";
 
 // reactstrap components
-import {Alert, Card, CardBody, CardHeader, CardTitle, Col, FormGroup, Input, Row, Table,} from "reactstrap";
-import {AvField, AvForm} from 'availity-reactstrap-validation';
-import DeleteIcon from '@material-ui/icons/Delete';
+import {Card, CardBody, CardHeader, CardTitle, Col, FormGroup, Input, Row, Table,} from "reactstrap";
+import {AvField, AvForm, AvRadio, AvRadioGroup} from 'availity-reactstrap-validation';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import IconButton from "@material-ui/core/IconButton";
 import ValidatorService from "../service/ValidatorService";
 import RestService from "../service/RestService";
+import NotificationAlert from "react-notification-alert";
+import StatusComponent from "../components/StatusComponent";
 
 // core components
 
@@ -31,56 +33,71 @@ class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            alertSeverity: 'info',
-            alertMessage: 'Что-то произошло.. :)',
-            name: '',
-            ip: '',
-            description: '',
             data: [],
-            isShowAlert: false
+            loading: false
         };
 
-        this.handleChangeName = this.handleChangeName.bind(this);
-        this.handleChangeIp = this.handleChangeIp.bind(this);
-        this.handleChangeDesc = this.handleChangeDesc.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChangeName(event) {
-        this.setState({name: event.target.value});
-    }
-
-    handleChangeIp(event) {
-        this.setState({ip: event.target.value});
-    }
-
-    handleChangeDesc(event) {
-        this.setState({description: event.target.value});
-    }
+    notify = (message, severity) => {
+        let options = {};
+        options = {
+            place: "tc",
+            message: (
+                <div>
+                    <div>
+                        {message}
+                    </div>
+                </div>
+            ),
+            type: severity,
+            icon: "tim-icons icon-bell-55",
+            autoDismiss: 7
+        };
+        this.refs.notificationAlert.notificationAlert(options);
+        this.getAllMonitor = this.getAllMonitor.bind(this)
+    };
 
     componentDidMount() {
-        RestService.executeApiGetAll()
+        this.getAllMonitor(false);
+    }
+
+    getAllMonitor(withStatus) {
+        if (withStatus) {
+            this.setState({loading: true})
+        }
+        RestService.executeApiGetAll(withStatus)
             .then(res => {
                 this.setState({data: res.data});
+                this.setState({loading: false})
             })
             .catch((ex) => {
-                this.showAlert(ValidatorService.getOrDefaultError(ex, "Ошибка при получении записей"), "warning", 3000)
+                this.showAlert(ValidatorService.getOrDefaultError(ex, "Ошибка при получении записей"), "warning")
             })
     }
 
-    handleSubmit(event) {
-        RestService.executeApiAddNew(this.state.name, this.state.ip, this.state.description)
+    handleSubmit(event, errors, values) {
+        if (Array.isArray(errors) && errors.length) {
+            console.log(JSON.stringify(errors, null, 2))
+        } else {
+            this.addNewMonitoring(event, values)
+        }
+    }
+
+    addNewMonitoring(event, values) {
+        RestService.executeApiAddNew(values)
             .then(res => {
                 this.setState(function (prevState, props) {
                     const prevData = prevState.data;
                     prevData.push(res.data)
                     return {data: prevData}
                 });
-                this.showAlert("Успешно сохранена запись", "success", 3000);
+                this.showAlert("Успешно сохранена запись", "success");
             })
             .catch((ex) => {
-                this.showAlert(ValidatorService.getOrDefaultError(ex, "Ошибка! Запись не сохранена"), "warning", 3000)
+                this.showAlert(ValidatorService.getOrDefaultError(ex, "Ошибка! Запись не сохранена"), "warning")
             });
 
         event.preventDefault();
@@ -94,33 +111,30 @@ class Dashboard extends React.Component {
                     delete prevData[index];
                     return {data: prevData}
                 });
-                this.showAlert("Успешно удалена запись", "success", 3000);
+                this.showAlert("Успешно удалена запись", "success");
             })
             .catch((ex) => {
-                this.showAlert(ValidatorService.getOrDefaultError(ex, "Ошибка! Запись не удалена"), "warning", 3000)
+                this.showAlert(ValidatorService.getOrDefaultError(ex, "Ошибка! Запись не удалена"), "warning")
             });
     }
 
-    showAlert(message, severity, delay) {
-        this.setState({isShowAlert: true});
-        this.setState({alertMessage: message});
-        this.setState({alertSeverity: severity});
-        setTimeout(() => {
-            this.setState({
-                isShowAlert: false
-            })
-        }, delay)
+    showAlert(message, severity) {
+        this.notify(message, severity);
+    }
 
+    addRow = () => {
+        var nextState = this.state;
+        nextState.data.push('placeholder');
+        this.setState(nextState);
     }
 
     render() {
         return (
             <>
                 <div className="content">
-                    {this.state.isShowAlert &&
-                    <Alert color={this.state.alertSeverity}>
-                        {this.state.alertMessage}
-                    </Alert>}
+                    <div className="react-notification-alert-container">
+                        <NotificationAlert ref="notificationAlert"/>
+                    </div>
                     <Row>
                         <Col md="8">
                             <Card>
@@ -128,14 +142,13 @@ class Dashboard extends React.Component {
                                     <h5 className="title">Добавить мониторинг IP</h5>
                                 </CardHeader>
                                 <CardBody>
-                                    <AvForm onValidSubmit={this.handleSubmit}>
+                                    <AvForm onSubmit={this.handleSubmit}>
                                         <Row>
                                             <Col md="5">
                                                 <AvField
                                                     name="name"
                                                     label="Имя:"
                                                     placeholder="Название"
-                                                    onChange={this.handleChangeName}
                                                     type="text"
                                                     errorMessage="Invalid name" validate={{
                                                     required: {value: true, errorMessage: 'Поле не должно быть пустым'}
@@ -143,10 +156,9 @@ class Dashboard extends React.Component {
                                             </Col>
                                             <Col md="7">
                                                 <AvField
-                                                    name="ip"
+                                                    name="value"
                                                     label="IP:"
                                                     placeholder="000.000.000.000"
-                                                    onChange={this.handleChangeIp}
                                                     type="text"
                                                     errorMessage="Invalid name" validate={{
                                                     required: {value: true, errorMessage: 'Поле не должно быть пустым'},
@@ -155,14 +167,30 @@ class Dashboard extends React.Component {
                                             </Col>
                                         </Row>
                                         <Row>
+                                            <Col md={"8"}>
+                                                <AvRadioGroup inline name="notification" required errorMessage={"Выберите тип"}>
+                                                    <AvRadio label="По электронной почте" value="MAIL"/>
+                                                    <AvRadio label="Сообщением в telegram" value="TELEGRAM" disabled/>
+                                                </AvRadioGroup>
+                                            </Col>
+                                        </Row>
+                                        <Row hidden>
+                                            <Col md={"8"}>
+                                                <AvField
+                                                    name={"type"}
+                                                    defaultValue={"IP"}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row>
                                             <Col md="8">
                                                 <FormGroup>
                                                     <label>Описание:</label>
-                                                    <Input cols="80"
-                                                           placeholder=" Описание мониторинга"
-                                                           rows="4"
-                                                           type="textarea"
-                                                           onChange={this.handleChangeDesc}/>
+                                                    <AvField cols="80"
+                                                             name={"description"}
+                                                             placeholder=" Описание мониторинга"
+                                                             rows="4"
+                                                             type="textarea"/>
                                                 </FormGroup>
                                             </Col>
                                         </Row>
@@ -187,8 +215,17 @@ class Dashboard extends React.Component {
                                         <thead className="text-primary">
                                         <tr>
                                             <th>Имя</th>
-                                            <th>Ip</th>
+                                            <th>Ip/domain</th>
                                             <th>Описание</th>
+                                            <th>Тип уведомления</th>
+                                            <th>
+                                                Статус
+                                                <IconButton color="inherit" size={"small"} onClick={() => {
+                                                    this.getAllMonitor(true);
+                                                }}>
+                                                    <i className="tim-icons icon-refresh-02" style={{padding: 5}}/>
+                                                </IconButton>
+                                            </th>
                                             <th>Удалить</th>
                                         </tr>
                                         </thead>
@@ -197,11 +234,17 @@ class Dashboard extends React.Component {
                                             return (
                                                 <tr key={index}>
                                                     <td>{listValue.name}</td>
-                                                    <td>{listValue.ip}</td>
+                                                    <td>{listValue.value}</td>
                                                     <td>{listValue.description}</td>
-                                                    <IconButton onClick={() => {
+                                                    <td>{listValue.notification}</td>
+                                                    <td>
+                                                        <StatusComponent status={this.state.data[index].status} loading={this.state.loading}/>
+                                                    </td>
+                                                    <td><IconButton onClick={() => {
                                                         this.handleDelete(listValue.id, index)
-                                                    }} color="secondary"><DeleteIcon/></IconButton>
+                                                    }} style={{color: "#cb5151"}} size={"small"}>
+                                                        <DeleteForeverIcon/>
+                                                    </IconButton></td>
                                                 </tr>
                                             );
                                         })}

@@ -19,18 +19,16 @@ class RestService {
         return axios.post(`${AUTH_URL}/register`, values)
     }
 
-    executeApiAddNew(name, ip, description) {
-        return axios.post(`${API_URL}/test`, {
-            name, ip, description
-        })
+    executeApiAddNew(values) {
+        return axios.post(`${API_URL}/subscription`, values)
     }
 
-    executeApiGetAll() {
-        return axios.get(`${API_URL}/test`)
+    executeApiGetAll(withStatus) {
+        return axios.get(`${API_URL}/subscription?withStatus=`+withStatus)
     }
 
     executeApiDelete(id) {
-        return axios.delete(`${API_URL}/test/` + id)
+        return axios.delete(`${API_URL}/subscription/` + id)
     }
 
     executeApiUserInfo() {

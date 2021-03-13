@@ -24,16 +24,13 @@ import Button from "@material-ui/core/Button";
 import ValidatorService from "../service/ValidatorService";
 import {AvField, AvForm} from "availity-reactstrap-validation";
 import * as classnames from "classnames";
+import NotificationAlert from "react-notification-alert";
 
 class UserProfile extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            isShowPassNotification: false,
-            isShowProfileNotification: false,
-            alertSeverity: 'info',
-            alertMessage: 'Что-то произошло.. :)',
             activeTab: '1',
             password_old: '',
             password_new: '',
@@ -52,6 +49,24 @@ class UserProfile extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleChangePass = this.handleChangePass.bind(this)
     }
+
+    notify = (message, severity) => {
+        let options = {};
+        options = {
+            place: "tc",
+            message: (
+                <div>
+                    <div>
+                        {message}
+                    </div>
+                </div>
+            ),
+            type: severity,
+            icon: "tim-icons icon-bell-55",
+            autoDismiss: 7
+        };
+        this.refs.notificationAlert.notificationAlert(options);
+    };
 
     toggle = tab => {
         if (this.state.activeTab !== tab) this.setState({activeTab: tab});
@@ -104,32 +119,20 @@ class UserProfile extends React.Component {
     };
 
     handleShowPassAlert(message, severity) {
-        this.setState({isShowPassNotification: true});
-        this.setState({alertMessage: message});
-        this.setState({alertSeverity: severity});
-        setTimeout(() => {
-            this.setState({
-                isShowPassNotification: false
-            })
-        }, 3000)
-
+        this.notify(message, severity);
     }
 
     handleShowProfileAlert(message, severity) {
-        this.setState({isShowProfileNotification: true});
-        this.setState({alertMessage: message});
-        this.setState({alertSeverity: severity});
-        setTimeout(() => {
-            this.setState({
-                isShowProfileNotification: false
-            })
-        }, 3000)
+        this.notify(message, severity);
     }
 
     render() {
         return (
             <>
                 <div className="content">
+                    <div className="react-notification-alert-container">
+                        <NotificationAlert ref="notificationAlert" />
+                    </div>
                     <Nav tabs>
                         <NavItem>
                             <NavLink
@@ -158,9 +161,6 @@ class UserProfile extends React.Component {
                                 <Col md="8">
                                     <Card>
                                         <CardHeader>
-                                            {this.state.isShowProfileNotification && <Alert color={this.state.alertSeverity}>
-                                                {this.state.alertMessage}
-                                            </Alert>}
                                         </CardHeader>
                                         <AvForm onSubmit={this.handleSubmit}>
                                             <CardBody>
@@ -292,9 +292,6 @@ class UserProfile extends React.Component {
                                 <Col md="8">
                                     <Card>
                                         <CardHeader>
-                                            {this.state.isShowPassNotification && <Alert color={this.state.alertSeverity}>
-                                                {this.state.alertMessage}
-                                            </Alert>}
                                         </CardHeader>
                                         <CardBody>
                                             <AvForm onValidSubmit={this.handleChangePass}>
