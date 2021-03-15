@@ -18,28 +18,66 @@
 import React from "react";
 
 // reactstrap components
-import {Card, CardBody, CardHeader, CardTitle, Col, FormGroup, Input, Row, Table,} from "reactstrap";
-import {AvField, AvForm, AvRadio, AvRadioGroup} from 'availity-reactstrap-validation';
+import {Collapse, Card, CardBody, CardHeader, CardTitle, Col, FormGroup, Input, Row, Table} from "reactstrap";
+import {AvField, AvForm} from 'availity-reactstrap-validation';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import IconButton from "@material-ui/core/IconButton";
 import ValidatorService from "../service/ValidatorService";
 import RestService from "../service/RestService";
 import NotificationAlert from "react-notification-alert";
 import StatusComponent from "../components/StatusComponent";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 
 // core components
-
 class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             data: [],
-            loading: false
+            loading: false,
+            addNew: false,
+            anchorEl: null,
+            addNewIP: true
         };
-
         this.handleDelete = this.handleDelete.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
+
+    getType() {
+        return this.state.addNewIP ? "IP" : "DOMAIN";
+    }
+
+    handleClick = (event) => {
+        if (this.state.addNew) {
+            this.setState({addNew: !this.state.addNew})
+        }
+        else {
+            this.setAnchorEl(event.currentTarget);
+        }
+    };
+
+    setAnchorEl(an) {
+        this.setState({anchorEl: an})
+    }
+
+    handleClose(type) {
+        if (type === 'IP') {
+            this.setState({
+                addNewIP: true,
+                addNew: true
+            })
+        }
+        else if (type === 'DOMAIN') {
+            this.setState({
+                addNewIP: false,
+                addNew: true
+            })
+        }
+        this.setAnchorEl(null);
+    };
 
     notify = (message, severity) => {
         let options = {};
@@ -135,75 +173,7 @@ class Dashboard extends React.Component {
                     <div className="react-notification-alert-container">
                         <NotificationAlert ref="notificationAlert"/>
                     </div>
-                    <Row>
-                        <Col md="8">
-                            <Card>
-                                <CardHeader>
-                                    <h5 className="title">Добавить мониторинг IP</h5>
-                                </CardHeader>
-                                <CardBody>
-                                    <AvForm onSubmit={this.handleSubmit}>
-                                        <Row>
-                                            <Col md="5">
-                                                <AvField
-                                                    name="name"
-                                                    label="Имя:"
-                                                    placeholder="Название"
-                                                    type="text"
-                                                    errorMessage="Invalid name" validate={{
-                                                    required: {value: true, errorMessage: 'Поле не должно быть пустым'}
-                                                }}/>
-                                            </Col>
-                                            <Col md="7">
-                                                <AvField
-                                                    name="value"
-                                                    label="IP:"
-                                                    placeholder="000.000.000.000"
-                                                    type="text"
-                                                    errorMessage="Invalid name" validate={{
-                                                    required: {value: true, errorMessage: 'Поле не должно быть пустым'},
-                                                    pattern: {value: ValidatorService.validateIP_Pattern(), errorMessage: 'Формат IP адреса не валидный'}
-                                                }}/>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={"8"}>
-                                                <AvRadioGroup inline name="notification" required errorMessage={"Выберите тип"}>
-                                                    <AvRadio label="По электронной почте" value="MAIL"/>
-                                                    <AvRadio label="Сообщением в telegram" value="TELEGRAM" disabled/>
-                                                </AvRadioGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row hidden>
-                                            <Col md={"8"}>
-                                                <AvField
-                                                    name={"type"}
-                                                    defaultValue={"IP"}
-                                                />
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md="8">
-                                                <FormGroup>
-                                                    <label>Описание:</label>
-                                                    <AvField cols="80"
-                                                             name={"description"}
-                                                             placeholder=" Описание мониторинга"
-                                                             rows="4"
-                                                             type="textarea"/>
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md="12">
-                                                <Input type="submit" value="Отправить"/>
-                                            </Col>
-                                        </Row>
-                                    </AvForm>
-                                </CardBody>
-                            </Card>
-                        </Col>
-                    </Row>
+
                     <Row>
                         <Col md="12">
                             <Card>
@@ -251,6 +221,103 @@ class Dashboard extends React.Component {
                                         </tbody>
                                     </Table>
                                 </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md="8">
+                            <Card>
+                                <CardHeader>
+                                    <h5 className="title">Добавить мониторинг IP
+                                        <IconButton aria-haspopup="true" aria-controls="simple-menu" onClick={this.handleClick} color="inherit" size={"small"}>
+                                            {this.state.addNew ?
+                                                <i className="tim-icons icon-simple-remove" style={{margin: 5}}/> :
+                                                <i className="tim-icons icon-simple-add" style={{margin: 5}}/>
+                                            }
+                                        </IconButton>
+                                        <Menu
+                                            id="simple-menu"
+                                            anchorEl={this.state.anchorEl}
+                                            keepMounted
+                                            open={Boolean(this.state.anchorEl)}
+                                            onClose={this.handleClose}>
+                                            <MenuItem onClick={() => {this.handleClose("IP")}}>IP адрес</MenuItem>
+                                            <MenuItem onClick={() => {this.handleClose("DOMAIN")}}>Домен</MenuItem>
+                                        </Menu>
+                                    </h5>
+                                </CardHeader>
+                                <Collapse isOpen={this.state.addNew}>
+                                    <CardBody>
+                                        <AvForm onSubmit={this.handleSubmit}>
+                                            <Row>
+                                                <Col md="5">
+                                                    <AvField
+                                                        name="name"
+                                                        label="Имя:"
+                                                        placeholder="Название"
+                                                        type="text"
+                                                        errorMessage="Invalid name" validate={{
+                                                        required: {value: true, errorMessage: 'Поле не должно быть пустым'}
+                                                    }}/>
+                                                </Col>
+                                                <Col md="7">
+                                                    {this.state.addNewIP ?
+                                                        <AvField
+                                                        name="value"
+                                                        label="IP:"
+                                                        placeholder="000.000.000.000"
+                                                        type="text"
+                                                        errorMessage="Invalid name" validate={{
+                                                        required: {value: true, errorMessage: 'Поле не должно быть пустым'},
+                                                        pattern: {value: ValidatorService.validateIP_Pattern(), errorMessage: 'Формат IP адреса не валидный'}
+                                                    }}/> :
+                                                        <AvField
+                                                            name="value"
+                                                            label="Домен:"
+                                                            placeholder="google.com"
+                                                            type="text"
+                                                            errorMessage="Invalid name" validate={{
+                                                            required: {value: true, errorMessage: 'Поле не должно быть пустым'},
+                                                        }}/>
+                                                    }
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col md={"8"}>
+                                                    <AvField type="select" defaultValue="MAIL" label="Выберите тип уведомления" name="notification" required errorMessage={"Выберите тип уведомления"}>
+                                                        <option value="MAIL">По электронной почте</option>
+                                                        <option value="TELEGRAM" disabled>Сообщением в telegram</option>
+                                                    </AvField>
+                                                </Col>
+                                            </Row>
+                                            <Row hidden>
+                                                <Col md={"8"}>
+                                                    <AvField type="select" value={this.state.addNewIP ? "IP" : "DOMAIN"} label="Выберите тип уведомления" name="type" required errorMessage={"Выберите тип уведомления"}>
+                                                        <option value="IP">IP</option>
+                                                        <option value="DOMAIN">DOMAIN</option>
+                                                    </AvField>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col md="8">
+                                                    <FormGroup>
+                                                        <label>Описание:</label>
+                                                        <AvField cols="80"
+                                                                 name={"description"}
+                                                                 placeholder=" Описание мониторинга"
+                                                                 rows="4"
+                                                                 type="textarea"/>
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col md="12">
+                                                    <Input type="submit" value="Отправить"/>
+                                                </Col>
+                                            </Row>
+                                        </AvForm>
+                                    </CardBody>
+                                </Collapse>
                             </Card>
                         </Col>
                     </Row>
