@@ -285,6 +285,7 @@ class Dashboard extends React.Component {
                                             <Row>
                                                 <Col md={"8"}>
                                                     <AvField type="select" defaultValue="MAIL" label="Выберите тип уведомления" name="notification" required errorMessage={"Выберите тип уведомления"}>
+                                                        <option value="NONE">Без автоматического уведомления</option>
                                                         <option value="MAIL">По электронной почте</option>
                                                         <option value="TELEGRAM" disabled>Сообщением в telegram</option>
                                                     </AvField>
