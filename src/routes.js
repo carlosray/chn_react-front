@@ -17,6 +17,7 @@
 */
 import Dashboard from "views/Dashboard.js";
 import UserProfile from "views/UserProfile.js";
+import Search from "views/Search.js";
 
 var routes = [
   {
@@ -24,6 +25,13 @@ var routes = [
     name: "Dashboard",
     icon: "tim-icons icon-chart-pie-36",
     component: Dashboard,
+    layout: "/admin"
+  },
+  {
+    path: "/search",
+    name: "Search",
+    icon: "tim-icons icon-zoom-split",
+    component: Search,
     layout: "/admin"
   },
   {

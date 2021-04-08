@@ -1,49 +1,42 @@
 import React, {Component} from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import IconButton from "@material-ui/core/IconButton";
-import StatusComponent from "./StatusComponent";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
-import {Table} from "reactstrap";
+import {DataGrid, GridCellParams, GridToolbar} from '@material-ui/data-grid';
+import CustomNoRowsOverlay from 'components/CustomNoRowsOverlay';
+import CustomLoadingOverlay from 'components/CustomLoadingOverlay';
 
 class SearchComponent extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            columns: [
+                {field: 'ip', headerName: 'IP адреса', width: 300
+                },
+                {field: 'id', headerName: 'Домен', width: 200},
+                {field: 'reason', headerName: 'Причина блокировки', width: 150},
+                {field: 'dateOfBlock', headerName: 'Дата блокировки', width: 150},
+                {field: 'additionalParams', headerName: 'Доп. инфо', width: 300}]
+        }
     }
 
     render() {
         if (this.props.loading) {
             return <CircularProgress size={25}/>
         } else {
-            if (this.props.blockedResources && this.props.blockedResources.length > 0) {
-                return <div className="modal-body white-content"><Table className="tablesorter" responsive>
-                    <thead className="text-primary">
-                    <tr>
-                        <th>IP адреса</th>
-                        <th>Домен</th>
-                        <th>Причина блокировки</th>
-                        <th>Дата блокировки</th>
-                        <th>Доп. инфо</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {this.props.blockedResources.map((listValue, index) => {
-                        return (
-                            <tr key={index}>
-                                <td>{listValue.ip.map((val) =>
-                                    <li key={val}>{val}</li>)}</td>
-                                <td>{listValue.domain}</td>
-                                <td>{listValue.reason}</td>
-                                <td>{listValue.dateOfBlock}</td>
-                                <td>{listValue.additionalParams.map((val) =>
-                                    <li key={val}>{val}</li>)}</td>
-                            </tr>
-                        );
-                    })}
-                    </tbody>
-                </Table></div>
-            } else {
-                return <div className="modal-body white-content"><p>Не найдено заблокированных ресурсов</p></div>
-            }
+            return <div style={{width: '100%'}}>
+                <DataGrid className={"text-white"} autoHeight
+                          getRowId={(row) => row.domain}
+                          sortModel={[
+                              {
+                                  field: 'id',
+                                  sort: 'asc',
+                              },
+                          ]}
+                          components={{
+                              Toolbar: GridToolbar,
+                              NoRowsOverlay: CustomNoRowsOverlay,
+                              LoadingOverlay: CustomLoadingOverlay,
+                          }} rows={this.props.blockedResources} columns={this.state.columns} pageSize={15}/>
+            </div>
         }
     }
 }

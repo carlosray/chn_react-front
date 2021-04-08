@@ -22,27 +22,14 @@ import classNames from "classnames";
 // reactstrap components
 import {Row, Col, Button, Collapse, Container, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, Modal, Nav, Navbar, NavbarBrand, NavLink, UncontrolledDropdown, Table} from "reactstrap";
 import RestService from "../../service/RestService";
-import ValidatorService from "../../service/ValidatorService";
-import IconButton from "@material-ui/core/IconButton";
-import SearchComponent from "../SearchComponent";
 
 class AdminNavbar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             collapseOpen: false,
-            modalSearch: false,
             color: "navbar-transparent",
-            type: "IP",
-            value: "",
-            isSearching: false,
-            isShowSearchingResult: false,
-            blockedResources: []
         };
-
-        this.handleChange = this.handleChange.bind(this)
-        this.handleSearch = this.handleSearch.bind(this)
-        this.handleCloseSearch = this.handleCloseSearch.bind(this)
     }
 
     componentDidMount() {
@@ -51,38 +38,6 @@ class AdminNavbar extends React.Component {
 
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateColor);
-    }
-
-    handleChange(event) {
-        this.setState(
-            {
-                [event.target.name]: event.target.value
-            }
-        )
-    }
-
-    handleSearch(event) {
-        if (event.key === 'Enter') {
-            this.setState({isSearching: true})
-            this.setState({isShowSearchingResult: true})
-            RestService.executeSearch(this.state.type, this.state.value)
-                .then(res => {
-                    this.setState({blockedResources: res.data})
-                })
-                .catch((ex) => {
-                    console.log(ex)
-                    this.setState({isShowSearchingResult: false})
-                });
-            this.setState({isSearching: false});
-        }
-    }
-
-    handleCloseSearch() {
-        this.setState({
-            isShowSearchingResult: false,
-            isSearching: false,
-            blockedResources: []
-        });
     }
 
     logout() {
@@ -114,12 +69,6 @@ class AdminNavbar extends React.Component {
         }
         this.setState({
             collapseOpen: !this.state.collapseOpen
-        });
-    };
-    // this function is to open the Search modal
-    toggleModalSearch = () => {
-        this.setState({
-            modalSearch: !this.state.modalSearch
         });
     };
 
@@ -167,18 +116,6 @@ class AdminNavbar extends React.Component {
                         </button>
                         <Collapse navbar isOpen={this.state.collapseOpen}>
                             <Nav className="ml-auto" navbar>
-                                <InputGroup className="search-bar">
-                                    <Button
-                                        color="link"
-                                        data-target="#searchModal"
-                                        data-toggle="modal"
-                                        id="search-button"
-                                        onClick={this.toggleModalSearch}
-                                    >
-                                        <i className="tim-icons icon-zoom-split"/>
-                                        <span className="d-lg-none d-md-block">Поиск</span>
-                                    </Button>
-                                </InputGroup>
                                 <UncontrolledDropdown nav>
                                     <DropdownToggle
                                         caret
@@ -213,33 +150,6 @@ class AdminNavbar extends React.Component {
                         </Collapse>
                     </Container>
                 </Navbar>
-                <Modal
-                    modalClassName="modal-search"
-                    isOpen={this.state.modalSearch}
-                    toggle={this.toggleModalSearch}
-                    onClosed={this.handleCloseSearch}
-                >
-                    <div className="modal-header">
-                        <Col>
-                            <Input type="select" name="type" onChange={this.handleChange}>
-                                <option value="IP">IP адрес</option>
-                                <option value="DOMAIN">Домен</option>
-                            </Input>
-                        </Col>
-                        <Input id="inlineFormInputGroup" name="value" placeholder={this.state.type === "IP" ? "Введите IP адрес для поиска" : "Введите домен для поиска"} type="text" onChange={this.handleChange} onKeyPress={this.handleSearch}/>
-
-                        <button
-                            aria-label="Close"
-                            className="close"
-                            data-dismiss="modal"
-                            type="button"
-                            onClick={this.toggleModalSearch}
-                        >
-                            <i className="tim-icons icon-simple-remove"/>
-                        </button>
-                    </div>
-                    {this.state.isShowSearchingResult && <SearchComponent blockedResources={this.state.blockedResources} loading={this.state.isSearching}/>}
-                </Modal>
             </>
         );
     }
