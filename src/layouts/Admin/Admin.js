@@ -139,10 +139,10 @@ class Admin extends React.Component {
             </Switch>
           </div>
         </div>
-        <FixedPlugin
-          bgColor={this.state.backgroundColor}
-          handleBgClick={this.handleBgClick}
-        />
+        {/*<FixedPlugin*/}
+        {/*  bgColor={this.state.backgroundColor}*/}
+        {/*  handleBgClick={this.handleBgClick}*/}
+        {/*/>*/}
       </>
     );
   }

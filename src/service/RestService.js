@@ -35,8 +35,8 @@ class RestService {
         return axios.get(`${API_URL}/user`)
     }
 
-    executeSearch(type, search) {
-        return axios.get(`${API_URL}/search?type=`+type+`&search=`+search)
+    executeSearch(type, value) {
+        return axios.get(`${API_URL}/search?type=`+type+`&value=`+value)
     }
 
     executeCount() {
