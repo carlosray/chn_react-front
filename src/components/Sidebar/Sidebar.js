@@ -26,6 +26,7 @@ import PerfectScrollbar from "perfect-scrollbar";
 
 // reactstrap components
 import {Nav} from "reactstrap";
+import RestService from "../../service/RestService";
 
 var ps;
 
@@ -33,6 +34,9 @@ class Sidebar extends React.Component {
   constructor(props) {
     super(props);
     this.activeRoute.bind(this);
+    this.state = {
+      count: 0
+    }
   }
   // verifies if routeName is the one active (in browser input)
   activeRoute(routeName) {
@@ -45,6 +49,13 @@ class Sidebar extends React.Component {
         suppressScrollY: false
       });
     }
+    RestService.executeCount()
+        .then(res => {
+          this.setState({count: res.data})
+        })
+        .catch(ex => {
+          console.log(ex)
+        })
   }
   componentWillUnmount() {
     if (navigator.platform.indexOf("Win") > -1) {
@@ -117,6 +128,20 @@ class Sidebar extends React.Component {
           <Nav>
             {routes.map((prop, key) => {
               if (prop.redirect) return null;
+              if (!prop.path) {
+                return (
+                    <li>
+                      <NavLink
+                          to={prop.layout + prop.path}
+                          className="nav-link"
+                          activeClassName="active"
+                      >
+                        <i className={prop.icon} />
+                        <p>{prop.name + this.state.count}</p>
+                      </NavLink>
+                    </li>
+                )
+              }
               return (
                 <li
                   className={

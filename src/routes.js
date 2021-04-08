@@ -32,6 +32,9 @@ var routes = [
     icon: "tim-icons icon-single-02",
     component: UserProfile,
     layout: "/admin"
+  },
+  {
+    name: "Записей в реестре: "
   }
 ];
 export default routes;
